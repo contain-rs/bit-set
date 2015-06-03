@@ -1,0 +1,6 @@
+[package]
+name = "bit-set"
+version = "0.1.0"
+authors = ["Alexis Beingessner <a.beingessner@gmail.com>"]
+
+[dependencies.bit-vec]
