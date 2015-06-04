@@ -8,8 +8,6 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-#![feature(core)]
-
 /// An implementation of a set using a bit vector as an underlying
 /// representation for holding unsigned numerical elements.
 ///
@@ -20,8 +18,7 @@
 /// # Examples
 ///
 /// ```
-/// # #![feature(collections)]
-/// use std::collections::{BitSet, BitVec};
+/// use bit_set::BitSet;
 ///
 /// // It's a regular set
 /// let mut s = BitSet::new();
@@ -36,7 +33,7 @@
 /// }
 ///
 /// // Can initialize from a `BitVec`
-/// let other = BitSet::from_bit_vec(BitVec::from_bytes(&[0b11010000]));
+/// let other = BitSet::from_bytes(&[0b11010000]);
 ///
 /// s.union_with(&other);
 ///
@@ -46,7 +43,7 @@
 /// }
 ///
 /// // Can convert back to a `BitVec`
-/// let bv: BitVec = s.into_bit_vec();
+/// let bv = s.into_bit_vec();
 /// assert!(bv[3]);
 /// ```
 
@@ -112,12 +109,12 @@ impl<B: BitBlock> Clone for BitSet<B> {
 
 impl<B: BitBlock> Default for BitSet<B> {
     #[inline]
-    fn default() -> Self { BitSet::new() }
+    fn default() -> Self { BitSet { bit_vec: Default::default() } }
 }
 
 impl<B: BitBlock> FromIterator<usize> for BitSet<B> {
     fn from_iter<I: IntoIterator<Item=usize>>(iter: I) -> Self {
-        let mut ret = BitSet::new();
+        let mut ret: Self = Default::default();
         ret.extend(iter);
         ret
     }
@@ -135,43 +132,51 @@ impl<B: BitBlock> Extend<usize> for BitSet<B> {
 impl<B: BitBlock> PartialOrd for BitSet<B> {
     #[inline]
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        let (a_iter, b_iter) = match_words(self.get_ref(), other.get_ref());
-        iter::order::partial_cmp(a_iter, b_iter)
+        Some(self.cmp(other))
     }
 }
 
 impl<B: BitBlock> Ord for BitSet<B> {
     #[inline]
     fn cmp(&self, other: &Self) -> Ordering {
-        let (a_iter, b_iter) = match_words(self.get_ref(), other.get_ref());
-        iter::order::cmp(a_iter, b_iter)
+        let mut a = self.iter();
+        let mut b = other.iter();
+        loop {
+            match (a.next(), b.next()) {
+                (Some(x), Some(y)) => match x.cmp(&y) {
+                    Ordering::Equal => {}
+                    otherwise => return otherwise,
+                },
+                (None, None) => return Ordering::Equal,
+                (None, _) => return Ordering::Less,
+                (_, None) => return Ordering::Greater,
+            }
+        }
     }
 }
 
 impl<B: BitBlock> cmp::PartialEq for BitSet<B> {
     #[inline]
     fn eq(&self, other: &Self) -> bool {
-        let (a_iter, b_iter) = match_words(self.get_ref(), other.get_ref());
-        iter::order::eq(a_iter, b_iter)
+        self.cmp(other) == Ordering::Equal
     }
 }
 
 impl<B: BitBlock> cmp::Eq for BitSet<B> {}
 
-impl<B: BitBlock> BitSet<B> {
+impl BitSet<u32> {
     /// Creates a new empty `BitSet`.
     ///
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::BitSet;
+    /// use bit_set::BitSet;
     ///
     /// let mut s = BitSet::new();
     /// ```
     #[inline]
     pub fn new() -> Self {
-        BitSet { bit_vec: BitVec::new() }
+        Default::default()
     }
 
     /// Creates a new `BitSet` with initially no contents, able to
@@ -180,8 +185,7 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::BitSet;
+    /// use bit_set::BitSet;
     ///
     /// let mut s = BitSet::with_capacity(100);
     /// assert!(s.capacity() >= 100);
@@ -197,21 +201,33 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::{BitVec, BitSet};
+    /// extern crate bit_vec;
+    /// extern crate bit_set;
     ///
-    /// let bv = BitVec::from_bytes(&[0b01100000]);
-    /// let s = BitSet::from_bit_vec(bv);
+    /// fn main() {
+    ///     use bit_vec::BitVec;
+    ///     use bit_set::BitSet;
     ///
-    /// // Print 1, 2 in arbitrary order
-    /// for x in s.iter() {
-    ///     println!("{}", x);
+    ///     let bv = BitVec::from_bytes(&[0b01100000]);
+    ///     let s = BitSet::from_bit_vec(bv);
+    ///
+    ///     // Print 1, 2 in arbitrary order
+    ///     for x in s.iter() {
+    ///         println!("{}", x);
+    ///     }
     /// }
     /// ```
     #[inline]
-    pub fn from_bit_vec(bit_vec: BitVec<B>) -> Self {
+    pub fn from_bit_vec(bit_vec: BitVec) -> Self {
         BitSet { bit_vec: bit_vec }
     }
+
+    pub fn from_bytes(bytes: &[u8]) -> Self {
+        BitSet { bit_vec: BitVec::from_bytes(bytes) }
+    }
+}
+
+impl<B: BitBlock> BitSet<B> {
 
     /// Returns the capacity in bits for this bit vector. Inserting any
     /// element less than this amount will not trigger a resizing.
@@ -219,8 +235,7 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::BitSet;
+    /// use bit_set::BitSet;
     ///
     /// let mut s = BitSet::with_capacity(100);
     /// assert!(s.capacity() >= 100);
@@ -240,8 +255,7 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::BitSet;
+    /// use bit_set::BitSet;
     ///
     /// let mut s = BitSet::new();
     /// s.reserve_len(10);
@@ -266,8 +280,7 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::BitSet;
+    /// use bit_set::BitSet;
     ///
     /// let mut s = BitSet::new();
     /// s.reserve_len_exact(10);
@@ -286,8 +299,7 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::BitSet;
+    /// use bit_set::BitSet;
     ///
     /// let mut s = BitSet::new();
     /// s.insert(0);
@@ -307,8 +319,7 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::BitSet;
+    /// use bit_set::BitSet;
     ///
     /// let mut s = BitSet::new();
     /// s.insert(0);
@@ -356,8 +367,7 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::BitSet;
+    /// use bit_set::BitSet;
     ///
     /// let mut s = BitSet::new();
     /// s.insert(32183231);
@@ -390,10 +400,9 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::{BitVec, BitSet};
+    /// use bit_set::BitSet;
     ///
-    /// let s = BitSet::from_bit_vec(BitVec::from_bytes(&[0b01001010]));
+    /// let s = BitSet::from_bytes(&[0b01001010]);
     ///
     /// // Print 1, 4, 6 in arbitrary order
     /// for x in s.iter() {
@@ -411,11 +420,10 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::{BitVec, BitSet};
+    /// use bit_set::BitSet;
     ///
-    /// let a = BitSet::from_bit_vec(BitVec::from_bytes(&[0b01101000]));
-    /// let b = BitSet::from_bit_vec(BitVec::from_bytes(&[0b10100000]));
+    /// let a = BitSet::from_bytes(&[0b01101000]);
+    /// let b = BitSet::from_bytes(&[0b10100000]);
     ///
     /// // Print 0, 1, 2, 4 in arbitrary order
     /// for x in a.union(&b) {
@@ -439,11 +447,10 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::{BitVec, BitSet};
+    /// use bit_set::BitSet;
     ///
-    /// let a = BitSet::from_bit_vec(BitVec::from_bytes(&[0b01101000]));
-    /// let b = BitSet::from_bit_vec(BitVec::from_bytes(&[0b10100000]));
+    /// let a = BitSet::from_bytes(&[0b01101000]);
+    /// let b = BitSet::from_bytes(&[0b10100000]);
     ///
     /// // Print 2
     /// for x in a.intersection(&b) {
@@ -468,11 +475,10 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::{BitSet, BitVec};
+    /// use bit_set::BitSet;
     ///
-    /// let a = BitSet::from_bit_vec(BitVec::from_bytes(&[0b01101000]));
-    /// let b = BitSet::from_bit_vec(BitVec::from_bytes(&[0b10100000]));
+    /// let a = BitSet::from_bytes(&[0b01101000]);
+    /// let b = BitSet::from_bytes(&[0b10100000]);
     ///
     /// // Print 1, 4 in arbitrary order
     /// for x in a.difference(&b) {
@@ -504,11 +510,10 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::{BitSet, BitVec};
+    /// use bit_set::BitSet;
     ///
-    /// let a = BitSet::from_bit_vec(BitVec::from_bytes(&[0b01101000]));
-    /// let b = BitSet::from_bit_vec(BitVec::from_bytes(&[0b10100000]));
+    /// let a = BitSet::from_bytes(&[0b01101000]);
+    /// let b = BitSet::from_bytes(&[0b10100000]);
     ///
     /// // Print 0, 1, 4 in arbitrary order
     /// for x in a.symmetric_difference(&b) {
@@ -531,16 +536,15 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::{BitSet, BitVec};
+    /// use bit_set::BitSet;
     ///
     /// let a   = 0b01101000;
     /// let b   = 0b10100000;
     /// let res = 0b11101000;
     ///
-    /// let mut a = BitSet::from_bit_vec(BitVec::from_bytes(&[a]));
-    /// let b = BitSet::from_bit_vec(BitVec::from_bytes(&[b]));
-    /// let res = BitSet::from_bit_vec(BitVec::from_bytes(&[res]));
+    /// let mut a = BitSet::from_bytes(&[a]);
+    /// let b = BitSet::from_bytes(&[b]);
+    /// let res = BitSet::from_bytes(&[res]);
     ///
     /// a.union_with(&b);
     /// assert_eq!(a, res);
@@ -555,16 +559,15 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::{BitSet, BitVec};
+    /// use bit_set::BitSet;
     ///
     /// let a   = 0b01101000;
     /// let b   = 0b10100000;
     /// let res = 0b00100000;
     ///
-    /// let mut a = BitSet::from_bit_vec(BitVec::from_bytes(&[a]));
-    /// let b = BitSet::from_bit_vec(BitVec::from_bytes(&[b]));
-    /// let res = BitSet::from_bit_vec(BitVec::from_bytes(&[res]));
+    /// let mut a = BitSet::from_bytes(&[a]);
+    /// let b = BitSet::from_bytes(&[b]);
+    /// let res = BitSet::from_bytes(&[res]);
     ///
     /// a.intersect_with(&b);
     /// assert_eq!(a, res);
@@ -580,24 +583,23 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::{BitSet, BitVec};
+    /// use bit_set::BitSet;
     ///
     /// let a   = 0b01101000;
     /// let b   = 0b10100000;
     /// let a_b = 0b01001000; // a - b
     /// let b_a = 0b10000000; // b - a
     ///
-    /// let mut bva = BitSet::from_bit_vec(BitVec::from_bytes(&[a]));
-    /// let bvb = BitSet::from_bit_vec(BitVec::from_bytes(&[b]));
-    /// let bva_b = BitSet::from_bit_vec(BitVec::from_bytes(&[a_b]));
-    /// let bvb_a = BitSet::from_bit_vec(BitVec::from_bytes(&[b_a]));
+    /// let mut bva = BitSet::from_bytes(&[a]);
+    /// let bvb = BitSet::from_bytes(&[b]);
+    /// let bva_b = BitSet::from_bytes(&[a_b]);
+    /// let bvb_a = BitSet::from_bytes(&[b_a]);
     ///
     /// bva.difference_with(&bvb);
     /// assert_eq!(bva, bva_b);
     ///
-    /// let bva = BitSet::from_bit_vec(BitVec::from_bytes(&[a]));
-    /// let mut bvb = BitSet::from_bit_vec(BitVec::from_bytes(&[b]));
+    /// let bva = BitSet::from_bytes(&[a]);
+    /// let mut bvb = BitSet::from_bytes(&[b]);
     ///
     /// bvb.difference_with(&bva);
     /// assert_eq!(bvb, bvb_a);
@@ -613,16 +615,15 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections)]
-    /// use std::collections::{BitSet, BitVec};
+    /// use bit_set::BitSet;
     ///
     /// let a   = 0b01101000;
     /// let b   = 0b10100000;
     /// let res = 0b11001000;
     ///
-    /// let mut a = BitSet::from_bit_vec(BitVec::from_bytes(&[a]));
-    /// let b = BitSet::from_bit_vec(BitVec::from_bytes(&[b]));
-    /// let res = BitSet::from_bit_vec(BitVec::from_bytes(&[res]));
+    /// let mut a = BitSet::from_bytes(&[a]);
+    /// let b = BitSet::from_bytes(&[b]);
+    /// let res = BitSet::from_bytes(&[res]);
     ///
     /// a.symmetric_difference_with(&b);
     /// assert_eq!(a, res);
@@ -638,8 +639,7 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections, bit_set_append_split_off)]
-    /// use std::collections::{BitVec, BitSet};
+    /// use bit_set::BitSet;
     ///
     /// let mut a = BitSet::new();
     /// a.insert(2);
@@ -654,7 +654,7 @@ impl<B: BitBlock> BitSet<B> {
     ///
     /// assert_eq!(a.len(), 4);
     /// assert_eq!(b.len(), 0);
-    /// assert_eq!(a, BitSet::from_bit_vec(BitVec::from_bytes(&[0b01110010])));
+    /// assert_eq!(a, BitSet::from_bytes(&[0b01110010]));
     /// ```
     pub fn append(&mut self, other: &mut Self) {
         self.union_with(other);
@@ -667,8 +667,8 @@ impl<B: BitBlock> BitSet<B> {
     /// # Examples
     ///
     /// ```
-    /// # #![feature(collections, bit_set_append_split_off)]
-    /// use std::collections::{BitSet, BitVec};
+    /// use bit_set::BitSet;
+    ///
     /// let mut a = BitSet::new();
     /// a.insert(2);
     /// a.insert(6);
@@ -679,8 +679,8 @@ impl<B: BitBlock> BitSet<B> {
     ///
     /// assert_eq!(a.len(), 2);
     /// assert_eq!(b.len(), 2);
-    /// assert_eq!(a, BitSet::from_bit_vec(BitVec::from_bytes(&[0b01100000])));
-    /// assert_eq!(b, BitSet::from_bit_vec(BitVec::from_bytes(&[0b00010010])));
+    /// assert_eq!(a, BitSet::from_bytes(&[0b01100000]));
+    /// assert_eq!(b, BitSet::from_bytes(&[0b00010010]));
     /// ```
     pub fn split_off(&mut self, at: usize) -> Self {
         let mut other = BitSet::new();
