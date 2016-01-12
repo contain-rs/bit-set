@@ -26,9 +26,9 @@
 //! s.insert(3);
 //! s.insert(7);
 //!
-//! s.remove(&7);
+//! s.remove(7);
 //!
-//! if !s.contains(&7) {
+//! if !s.contains(7) {
 //!     println!("There is no 7");
 //! }
 //!
@@ -372,7 +372,7 @@ impl<B: BitBlock> BitSet<B> {
     ///
     /// let mut s = BitSet::new();
     /// s.insert(32183231);
-    /// s.remove(&32183231);
+    /// s.remove(32183231);
     ///
     /// // Internal storage will probably be bigger than necessary
     /// println!("old capacity: {}", s.capacity());
@@ -734,9 +734,9 @@ impl<B: BitBlock> BitSet<B> {
 
     /// Returns `true` if this set contains the specified integer.
     #[inline]
-    pub fn contains(&self, value: &usize) -> bool {
+    pub fn contains(&self, value: usize) -> bool {
         let bit_vec = &self.bit_vec;
-        *value < bit_vec.len() && bit_vec[*value]
+        value < bit_vec.len() && bit_vec[value]
     }
 
     /// Returns `true` if the set has no elements in common with `other`.
@@ -768,7 +768,7 @@ impl<B: BitBlock> BitSet<B> {
     /// Adds a value to the set. Returns `true` if the value was not already
     /// present in the set.
     pub fn insert(&mut self, value: usize) -> bool {
-        if self.contains(&value) {
+        if self.contains(value) {
             return false;
         }
 
@@ -784,12 +784,12 @@ impl<B: BitBlock> BitSet<B> {
 
     /// Removes a value from the set. Returns `true` if the value was
     /// present in the set.
-    pub fn remove(&mut self, value: &usize) -> bool {
+    pub fn remove(&mut self, value: usize) -> bool {
         if !self.contains(value) {
             return false;
         }
 
-        self.bit_vec.set(*value, false);
+        self.bit_vec.set(value, false);
 
         return true;
     }
@@ -1011,9 +1011,9 @@ mod tests {
         for &b in &bools {
             for &l in &lengths {
                 let bitset = BitSet::from_bit_vec(BitVec::from_elem(l, b));
-                assert_eq!(bitset.contains(&1), b);
-                assert_eq!(bitset.contains(&(l-1)), b);
-                assert!(!bitset.contains(&l));
+                assert_eq!(bitset.contains(1), b);
+                assert_eq!(bitset.contains((l-1)), b);
+                assert!(!bitset.contains(l));
             }
         }
     }
@@ -1022,13 +1022,13 @@ mod tests {
     fn test_bit_vec_masking() {
         let b = BitVec::from_elem(140, true);
         let mut bs = BitSet::from_bit_vec(b);
-        assert!(bs.contains(&139));
-        assert!(!bs.contains(&140));
+        assert!(bs.contains(139));
+        assert!(!bs.contains(140));
         assert!(bs.insert(150));
-        assert!(!bs.contains(&140));
-        assert!(!bs.contains(&149));
-        assert!(bs.contains(&150));
-        assert!(!bs.contains(&151));
+        assert!(!bs.contains(140));
+        assert!(!bs.contains(149));
+        assert!(bs.contains(150));
+        assert!(!bs.contains(151));
     }
 
     #[test]
@@ -1036,13 +1036,13 @@ mod tests {
         let mut b = BitSet::new();
         assert!(b.insert(3));
         assert!(!b.insert(3));
-        assert!(b.contains(&3));
+        assert!(b.contains(3));
         assert!(b.insert(4));
         assert!(!b.insert(4));
-        assert!(b.contains(&3));
+        assert!(b.contains(3));
         assert!(b.insert(400));
         assert!(!b.insert(400));
-        assert!(b.contains(&400));
+        assert!(b.contains(400));
         assert_eq!(b.len(), 3);
     }
 
@@ -1152,11 +1152,11 @@ mod tests {
         assert!(set1.is_subset(&set2)); // { 2, 3 }  { 1, 2, 3 }
         set2.insert(400);
         assert!(set1.is_subset(&set2)); // { 2, 3 }  { 1, 2, 3, 4 }
-        set2.remove(&100);
+        set2.remove(100);
         assert!(set1.is_subset(&set2)); // { 2, 3 }  { 2, 3, 4 }
-        set2.remove(&300);
+        set2.remove(300);
         assert!(!set1.is_subset(&set2)); // { 2, 3 }  { 2, 4 }
-        set1.remove(&300);
+        set1.remove(300);
         assert!(set1.is_subset(&set2)); // { 2 }  { 2, 4 }
     }
 
@@ -1315,13 +1315,13 @@ mod tests {
         let mut a = BitSet::new();
 
         assert!(a.insert(1));
-        assert!(a.remove(&1));
+        assert!(a.remove(1));
 
         assert!(a.insert(100));
-        assert!(a.remove(&100));
+        assert!(a.remove(100));
 
         assert!(a.insert(1000));
-        assert!(a.remove(&1000));
+        assert!(a.remove(1000));
         a.shrink_to_fit();
     }
 
@@ -1337,11 +1337,11 @@ mod tests {
 
         assert!(a == b);
 
-        assert!(b.remove(&1));
-        assert!(a.contains(&1));
+        assert!(b.remove(1));
+        assert!(a.contains(1));
 
-        assert!(a.remove(&1000));
-        assert!(b.contains(&1000));
+        assert!(a.remove(1000));
+        assert!(b.contains(1000));
     }
 
 /*
