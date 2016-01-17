@@ -9,6 +9,7 @@
 
     <title>lib.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
     
@@ -24,17 +25,17 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
@@ -1531,9 +1532,9 @@
 <span class='doccomment'>//! s.insert(3);</span>
 <span class='doccomment'>//! s.insert(7);</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! s.remove(&amp;7);</span>
+<span class='doccomment'>//! s.remove(7);</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! if !s.contains(&amp;7) {</span>
+<span class='doccomment'>//! if !s.contains(7) {</span>
 <span class='doccomment'>//!     println!(&quot;There is no 7&quot;);</span>
 <span class='doccomment'>//! }</span>
 <span class='doccomment'>//!</span>
@@ -1877,7 +1878,7 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let mut s = BitSet::new();</span>
     <span class='doccomment'>/// s.insert(32183231);</span>
-    <span class='doccomment'>/// s.remove(&amp;32183231);</span>
+    <span class='doccomment'>/// s.remove(32183231);</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// // Internal storage will probably be bigger than necessary</span>
     <span class='doccomment'>/// println!(&quot;old capacity: {}&quot;, s.capacity());</span>
@@ -2239,9 +2240,9 @@
 
     <span class='doccomment'>/// Returns `true` if this set contains the specified integer.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>value</span>: <span class='kw-2'>&amp;</span><span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>value</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='kw'>let</span> <span class='ident'>bit_vec</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>bit_vec</span>;
-        <span class='op'>*</span><span class='ident'>value</span> <span class='op'>&lt;</span> <span class='ident'>bit_vec</span>.<span class='ident'>len</span>() <span class='op'>&amp;&amp;</span> <span class='ident'>bit_vec</span>[<span class='op'>*</span><span class='ident'>value</span>]
+        <span class='ident'>value</span> <span class='op'>&lt;</span> <span class='ident'>bit_vec</span>.<span class='ident'>len</span>() <span class='op'>&amp;&amp;</span> <span class='ident'>bit_vec</span>[<span class='ident'>value</span>]
     }
 
     <span class='doccomment'>/// Returns `true` if the set has no elements in common with `other`.</span>
@@ -2273,7 +2274,7 @@
     <span class='doccomment'>/// Adds a value to the set. Returns `true` if the value was not already</span>
     <span class='doccomment'>/// present in the set.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>insert</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>value</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>value</span>) {
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>contains</span>(<span class='ident'>value</span>) {
             <span class='kw'>return</span> <span class='boolval'>false</span>;
         }
 
@@ -2289,12 +2290,12 @@
 
     <span class='doccomment'>/// Removes a value from the set. Returns `true` if the value was</span>
     <span class='doccomment'>/// present in the set.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>remove</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>value</span>: <span class='kw-2'>&amp;</span><span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>remove</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>value</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>contains</span>(<span class='ident'>value</span>) {
             <span class='kw'>return</span> <span class='boolval'>false</span>;
         }
 
-        <span class='self'>self</span>.<span class='ident'>bit_vec</span>.<span class='ident'>set</span>(<span class='op'>*</span><span class='ident'>value</span>, <span class='boolval'>false</span>);
+        <span class='self'>self</span>.<span class='ident'>bit_vec</span>.<span class='ident'>set</span>(<span class='ident'>value</span>, <span class='boolval'>false</span>);
 
         <span class='kw'>return</span> <span class='boolval'>true</span>;
     }
@@ -2516,9 +2517,9 @@
         <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='ident'>b</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='ident'>bools</span> {
             <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='ident'>l</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='ident'>lengths</span> {
                 <span class='kw'>let</span> <span class='ident'>bitset</span> <span class='op'>=</span> <span class='ident'>BitSet</span>::<span class='ident'>from_bit_vec</span>(<span class='ident'>BitVec</span>::<span class='ident'>from_elem</span>(<span class='ident'>l</span>, <span class='ident'>b</span>));
-                <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>bitset</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='number'>1</span>), <span class='ident'>b</span>);
-                <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>bitset</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span>(<span class='ident'>l</span><span class='op'>-</span><span class='number'>1</span>)), <span class='ident'>b</span>);
-                <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>bitset</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>l</span>));
+                <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>bitset</span>.<span class='ident'>contains</span>(<span class='number'>1</span>), <span class='ident'>b</span>);
+                <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>bitset</span>.<span class='ident'>contains</span>((<span class='ident'>l</span><span class='op'>-</span><span class='number'>1</span>)), <span class='ident'>b</span>);
+                <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>bitset</span>.<span class='ident'>contains</span>(<span class='ident'>l</span>));
             }
         }
     }
@@ -2527,13 +2528,13 @@
     <span class='kw'>fn</span> <span class='ident'>test_bit_vec_masking</span>() {
         <span class='kw'>let</span> <span class='ident'>b</span> <span class='op'>=</span> <span class='ident'>BitVec</span>::<span class='ident'>from_elem</span>(<span class='number'>140</span>, <span class='boolval'>true</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>bs</span> <span class='op'>=</span> <span class='ident'>BitSet</span>::<span class='ident'>from_bit_vec</span>(<span class='ident'>b</span>);
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>bs</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='number'>139</span>));
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>bs</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='number'>140</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>bs</span>.<span class='ident'>contains</span>(<span class='number'>139</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>bs</span>.<span class='ident'>contains</span>(<span class='number'>140</span>));
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>bs</span>.<span class='ident'>insert</span>(<span class='number'>150</span>));
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>bs</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='number'>140</span>));
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>bs</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='number'>149</span>));
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>bs</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='number'>150</span>));
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>bs</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='number'>151</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>bs</span>.<span class='ident'>contains</span>(<span class='number'>140</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>bs</span>.<span class='ident'>contains</span>(<span class='number'>149</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>bs</span>.<span class='ident'>contains</span>(<span class='number'>150</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>bs</span>.<span class='ident'>contains</span>(<span class='number'>151</span>));
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
@@ -2541,13 +2542,13 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>b</span> <span class='op'>=</span> <span class='ident'>BitSet</span>::<span class='ident'>new</span>();
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>b</span>.<span class='ident'>insert</span>(<span class='number'>3</span>));
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>b</span>.<span class='ident'>insert</span>(<span class='number'>3</span>));
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>b</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='number'>3</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>b</span>.<span class='ident'>contains</span>(<span class='number'>3</span>));
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>b</span>.<span class='ident'>insert</span>(<span class='number'>4</span>));
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>b</span>.<span class='ident'>insert</span>(<span class='number'>4</span>));
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>b</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='number'>3</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>b</span>.<span class='ident'>contains</span>(<span class='number'>3</span>));
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>b</span>.<span class='ident'>insert</span>(<span class='number'>400</span>));
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>b</span>.<span class='ident'>insert</span>(<span class='number'>400</span>));
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>b</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='number'>400</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>b</span>.<span class='ident'>contains</span>(<span class='number'>400</span>));
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>b</span>.<span class='ident'>len</span>(), <span class='number'>3</span>);
     }
 
@@ -2657,11 +2658,11 @@
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>set1</span>.<span class='ident'>is_subset</span>(<span class='kw-2'>&amp;</span><span class='ident'>set2</span>)); <span class='comment'>// { 2, 3 }  { 1, 2, 3 }</span>
         <span class='ident'>set2</span>.<span class='ident'>insert</span>(<span class='number'>400</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>set1</span>.<span class='ident'>is_subset</span>(<span class='kw-2'>&amp;</span><span class='ident'>set2</span>)); <span class='comment'>// { 2, 3 }  { 1, 2, 3, 4 }</span>
-        <span class='ident'>set2</span>.<span class='ident'>remove</span>(<span class='kw-2'>&amp;</span><span class='number'>100</span>);
+        <span class='ident'>set2</span>.<span class='ident'>remove</span>(<span class='number'>100</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>set1</span>.<span class='ident'>is_subset</span>(<span class='kw-2'>&amp;</span><span class='ident'>set2</span>)); <span class='comment'>// { 2, 3 }  { 2, 3, 4 }</span>
-        <span class='ident'>set2</span>.<span class='ident'>remove</span>(<span class='kw-2'>&amp;</span><span class='number'>300</span>);
+        <span class='ident'>set2</span>.<span class='ident'>remove</span>(<span class='number'>300</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>set1</span>.<span class='ident'>is_subset</span>(<span class='kw-2'>&amp;</span><span class='ident'>set2</span>)); <span class='comment'>// { 2, 3 }  { 2, 4 }</span>
-        <span class='ident'>set1</span>.<span class='ident'>remove</span>(<span class='kw-2'>&amp;</span><span class='number'>300</span>);
+        <span class='ident'>set1</span>.<span class='ident'>remove</span>(<span class='number'>300</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>set1</span>.<span class='ident'>is_subset</span>(<span class='kw-2'>&amp;</span><span class='ident'>set2</span>)); <span class='comment'>// { 2 }  { 2, 4 }</span>
     }
 
@@ -2820,13 +2821,13 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>a</span> <span class='op'>=</span> <span class='ident'>BitSet</span>::<span class='ident'>new</span>();
 
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>a</span>.<span class='ident'>insert</span>(<span class='number'>1</span>));
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>a</span>.<span class='ident'>remove</span>(<span class='kw-2'>&amp;</span><span class='number'>1</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>a</span>.<span class='ident'>remove</span>(<span class='number'>1</span>));
 
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>a</span>.<span class='ident'>insert</span>(<span class='number'>100</span>));
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>a</span>.<span class='ident'>remove</span>(<span class='kw-2'>&amp;</span><span class='number'>100</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>a</span>.<span class='ident'>remove</span>(<span class='number'>100</span>));
 
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>a</span>.<span class='ident'>insert</span>(<span class='number'>1000</span>));
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>a</span>.<span class='ident'>remove</span>(<span class='kw-2'>&amp;</span><span class='number'>1000</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>a</span>.<span class='ident'>remove</span>(<span class='number'>1000</span>));
         <span class='ident'>a</span>.<span class='ident'>shrink_to_fit</span>();
     }
 
@@ -2842,11 +2843,11 @@
 
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>a</span> <span class='op'>==</span> <span class='ident'>b</span>);
 
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>b</span>.<span class='ident'>remove</span>(<span class='kw-2'>&amp;</span><span class='number'>1</span>));
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>a</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='number'>1</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>b</span>.<span class='ident'>remove</span>(<span class='number'>1</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>a</span>.<span class='ident'>contains</span>(<span class='number'>1</span>));
 
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>a</span>.<span class='ident'>remove</span>(<span class='kw-2'>&amp;</span><span class='number'>1000</span>));
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>b</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='number'>1000</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>a</span>.<span class='ident'>remove</span>(<span class='number'>1000</span>));
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>b</span>.<span class='ident'>contains</span>(<span class='number'>1000</span>));
     }
 
 <span class='comment'>/*
@@ -2971,40 +2972,49 @@
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-            <p>
-                Search functions by type signature (e.g.
-                <code>vec -> usize</code>)
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -3016,6 +3026,6 @@
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>
