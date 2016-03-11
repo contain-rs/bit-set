@@ -106,6 +106,10 @@ impl<B: BitBlock> Clone for BitSet<B> {
             bit_vec: self.bit_vec.clone(),
         }
     }
+
+    fn clone_from(&mut self, other: &Self) {
+        self.bit_vec.clone_from(&other.bit_vec);
+    }
 }
 
 impl<B: BitBlock> Default for BitSet<B> {
