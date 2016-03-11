@@ -133,33 +133,21 @@ impl<B: BitBlock> Extend<usize> for BitSet<B> {
 impl<B: BitBlock> PartialOrd for BitSet<B> {
     #[inline]
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
+        self.iter().partial_cmp(other)
     }
 }
 
 impl<B: BitBlock> Ord for BitSet<B> {
     #[inline]
     fn cmp(&self, other: &Self) -> Ordering {
-        let mut a = self.iter();
-        let mut b = other.iter();
-        loop {
-            match (a.next(), b.next()) {
-                (Some(x), Some(y)) => match x.cmp(&y) {
-                    Ordering::Equal => {}
-                    otherwise => return otherwise,
-                },
-                (None, None) => return Ordering::Equal,
-                (None, _) => return Ordering::Less,
-                (_, None) => return Ordering::Greater,
-            }
-        }
+        self.iter().cmp(other)
     }
 }
 
 impl<B: BitBlock> PartialEq for BitSet<B> {
     #[inline]
     fn eq(&self, other: &Self) -> bool {
-        self.cmp(other) == Ordering::Equal
+        self.iter().eq(other)
     }
 }
 
@@ -796,16 +784,7 @@ impl<B: BitBlock> BitSet<B> {
 
 impl<B: BitBlock> fmt::Debug for BitSet<B> {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        try!(write!(fmt, "{{"));
-        let mut first = true;
-        for n in self {
-            if !first {
-                try!(write!(fmt, ", "));
-            }
-            try!(write!(fmt, "{:?}", n));
-            first = false;
-        }
-        write!(fmt, "}}")
+        fmt.debug_set().entries(self).finish()
     }
 }
 
