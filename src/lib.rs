@@ -57,8 +57,7 @@ use std::cmp::Ordering;
 use std::cmp;
 use std::fmt;
 use std::hash;
-use std::iter::{Chain, Enumerate, Repeat, Skip, Take, repeat};
-use std::iter::{self, FromIterator};
+use std::iter::{self, Chain, Enumerate, FromIterator, Repeat, Skip, Take};
 
 type MatchWords<'a, B> = Chain<Enumerate<Blocks<'a, B>>, Skip<Take<Enumerate<Repeat<B>>>>>;
 
@@ -81,8 +80,9 @@ fn blocks_for_bits<B: BitBlock>(bits: usize) -> usize {
 
 // Take two BitVec's, and return iterators of their words, where the shorter one
 // has been padded with 0's
-fn match_words<'a,'b, B: BitBlock>(a: &'a BitVec<B>, b: &'b BitVec<B>)
-		-> (MatchWords<'a, B>, MatchWords<'b, B>) {
+fn match_words<'a, 'b, B: BitBlock>(a: &'a BitVec<B>, b: &'b BitVec<B>)
+    -> (MatchWords<'a, B>, MatchWords<'b, B>)
+{
     let a_len = a.storage().len();
     let b_len = b.storage().len();
 
@@ -96,16 +96,16 @@ fn match_words<'a,'b, B: BitBlock>(a: &'a BitVec<B>, b: &'b BitVec<B>)
     }
 }
 
-pub struct BitSet<B=u32> {
+pub struct BitSet<B = u32> {
     bit_vec: BitVec<B>,
 }
 
 impl<B: BitBlock> Clone for BitSet<B> {
-	fn clone(&self) -> Self {
-		BitSet {
-			bit_vec: self.bit_vec.clone(),
-		}
-	}
+    fn clone(&self) -> Self {
+        BitSet {
+            bit_vec: self.bit_vec.clone(),
+        }
+    }
 }
 
 impl<B: BitBlock> Default for BitSet<B> {
@@ -114,8 +114,8 @@ impl<B: BitBlock> Default for BitSet<B> {
 }
 
 impl<B: BitBlock> FromIterator<usize> for BitSet<B> {
-    fn from_iter<I: IntoIterator<Item=usize>>(iter: I) -> Self {
-        let mut ret: Self = Default::default();
+    fn from_iter<I: IntoIterator<Item = usize>>(iter: I) -> Self {
+        let mut ret = Self::default();
         ret.extend(iter);
         ret
     }
@@ -123,7 +123,7 @@ impl<B: BitBlock> FromIterator<usize> for BitSet<B> {
 
 impl<B: BitBlock> Extend<usize> for BitSet<B> {
     #[inline]
-    fn extend<I: IntoIterator<Item=usize>>(&mut self, iter: I) {
+    fn extend<I: IntoIterator<Item = usize>>(&mut self, iter: I) {
         for i in iter {
             self.insert(i);
         }
@@ -156,14 +156,14 @@ impl<B: BitBlock> Ord for BitSet<B> {
     }
 }
 
-impl<B: BitBlock> cmp::PartialEq for BitSet<B> {
+impl<B: BitBlock> PartialEq for BitSet<B> {
     #[inline]
     fn eq(&self, other: &Self) -> bool {
         self.cmp(other) == Ordering::Equal
     }
 }
 
-impl<B: BitBlock> cmp::Eq for BitSet<B> {}
+impl<B: BitBlock> Eq for BitSet<B> {}
 
 impl BitSet<u32> {
     /// Creates a new empty `BitSet`.
@@ -177,7 +177,7 @@ impl BitSet<u32> {
     /// ```
     #[inline]
     pub fn new() -> Self {
-        Default::default()
+        Self::default()
     }
 
     /// Creates a new `BitSet` with initially no contents, able to
@@ -194,7 +194,7 @@ impl BitSet<u32> {
     #[inline]
     pub fn with_capacity(nbits: usize) -> Self {
         let bit_vec = BitVec::from_elem(nbits, false);
-        BitSet::from_bit_vec(bit_vec)
+        Self::from_bit_vec(bit_vec)
     }
 
     /// Creates a new `BitSet` from the given bit vector.
@@ -294,7 +294,6 @@ impl<B: BitBlock> BitSet<B> {
         }
     }
 
-
     /// Consumes this set to return the underlying bit vector.
     ///
     /// # Examples
@@ -358,7 +357,7 @@ impl<B: BitBlock> BitSet<B> {
             let old = self_bit_vec.storage()[i];
             let new = f(old, w);
             unsafe {
-            	self_bit_vec.storage_mut()[i] = new;
+                self_bit_vec.storage_mut()[i] = new;
             }
         }
     }
@@ -391,8 +390,8 @@ impl<B: BitBlock> BitSet<B> {
         // Truncate
         let trunc_len = cmp::max(old_len - n, 1);
         unsafe {
-        	bit_vec.storage_mut().truncate(trunc_len);
-        	bit_vec.set_len(trunc_len * B::bits());
+            bit_vec.storage_mut().truncate(trunc_len);
+            bit_vec.set_len(trunc_len * B::bits());
         }
     }
 
@@ -953,14 +952,6 @@ impl<'a, B: BitBlock> IntoIterator for &'a BitSet<B> {
         self.iter()
     }
 }
-
-
-
-
-
-
-
-
 
 #[cfg(test)]
 mod tests {
