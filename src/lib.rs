@@ -59,6 +59,8 @@ use std::fmt;
 use std::hash;
 use std::iter::{self, Chain, Enumerate, FromIterator, Repeat, Skip, Take};
 
+pub mod bitidx;
+
 type MatchWords<'a, B> = Chain<Enumerate<Blocks<'a, B>>, Skip<Take<Enumerate<Repeat<B>>>>>;
 
 /// Computes how many blocks are needed to store that many bits
