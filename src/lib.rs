@@ -460,11 +460,14 @@ impl<B: BitBlock> BitSet<B> {
         fn bitand<B: BitBlock>(w1: B, w2: B) -> B { w1 & w2 }
         let min = cmp::min(self.bit_vec.len(), other.bit_vec.len());
 
-        Intersection(BlockIter::from_blocks(TwoBitPositions {
-            set: self.bit_vec.blocks(),
-            other: other.bit_vec.blocks(),
-            merge: bitand,
-        }).take(min))
+        Intersection {
+            iter: BlockIter::from_blocks(TwoBitPositions {
+                set: self.bit_vec.blocks(),
+                other: other.bit_vec.blocks(),
+                merge: bitand,
+            }), 
+            n: min
+        }
     }
 
     /// Iterator over each usize stored in the `self` setminus `other`.
@@ -834,7 +837,14 @@ pub struct Iter<'a, B: 'a>(BlockIter<Blocks<'a, B>, B>);
 #[derive(Clone)]
 pub struct Union<'a, B: 'a>(BlockIter<TwoBitPositions<'a, B>, B>);
 #[derive(Clone)]
-pub struct Intersection<'a, B: 'a>(Take<BlockIter<TwoBitPositions<'a, B>, B>>);
+pub struct Intersection<'a, B: 'a> {
+    iter: BlockIter<TwoBitPositions<'a, B>, B>,
+    // as an optimization, we compute the maximum possible
+    // number of elements in the intersection, and count it
+    // down as we return elements. If we reach zero, we can
+    // stop.
+    n: usize
+}
 #[derive(Clone)]
 pub struct Difference<'a, B: 'a>(BlockIter<TwoBitPositions<'a, B>, B>);
 #[derive(Clone)]
@@ -862,6 +872,11 @@ impl<'a, T, B: BitBlock> Iterator for BlockIter<T, B> where T: Iterator<Item=B> 
         // return offset + (index of LSB)
         Some(self.head_offset + (B::count_ones(k) as usize))
     }
+
+    fn count(self) -> usize {
+        self.head.count_ones() + self.tail.map(|block| block.count_ones()).sum::<usize>()
+    }
+
 
     #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -903,6 +918,7 @@ impl<'a, B: BitBlock> Iterator for Iter<'a, B> {
 
     #[inline] fn next(&mut self) -> Option<usize> { self.0.next() }
     #[inline] fn size_hint(&self) -> (usize, Option<usize>) { self.0.size_hint() }
+    #[inline] fn count(self) -> usize { self.0.count() }
 }
 
 impl<'a, B: BitBlock> Iterator for Union<'a, B> {
@@ -910,13 +926,29 @@ impl<'a, B: BitBlock> Iterator for Union<'a, B> {
 
     #[inline] fn next(&mut self) -> Option<usize> { self.0.next() }
     #[inline] fn size_hint(&self) -> (usize, Option<usize>) { self.0.size_hint() }
+    #[inline] fn count(self) -> usize { self.0.count() }
 }
 
 impl<'a, B: BitBlock> Iterator for Intersection<'a, B> {
     type Item = usize;
 
-    #[inline] fn next(&mut self) -> Option<usize> { self.0.next() }
-    #[inline] fn size_hint(&self) -> (usize, Option<usize>) { self.0.size_hint() }
+    #[inline] fn next(&mut self) -> Option<usize> { 
+        if self.n != 0 {
+            self.n -= 1;
+            self.iter.next() 
+        } else {
+            None
+        }
+    }
+    #[inline] fn size_hint(&self) -> (usize, Option<usize>) { 
+        // We could invoke self.iter.size_hint() and incorporate that into the hint.
+        // In practice, that does not seem worthwhile because the lower bound will
+        // always be zero and the upper bound could only possibly less then n in a
+        // partially iterated iterator. However, it makes little sense ask for size_hint
+        // in a partially iterated iterator, so it did not seem worthwhile.
+        (0, Some(self.n))
+    }
+    #[inline] fn count(self) -> usize { self.iter.count() }
 }
 
 impl<'a, B: BitBlock> Iterator for Difference<'a, B> {
@@ -924,6 +956,7 @@ impl<'a, B: BitBlock> Iterator for Difference<'a, B> {
 
     #[inline] fn next(&mut self) -> Option<usize> { self.0.next() }
     #[inline] fn size_hint(&self) -> (usize, Option<usize>) { self.0.size_hint() }
+    #[inline] fn count(self) -> usize { self.0.count() }
 }
 
 impl<'a, B: BitBlock> Iterator for SymmetricDifference<'a, B> {
@@ -931,6 +964,7 @@ impl<'a, B: BitBlock> Iterator for SymmetricDifference<'a, B> {
 
     #[inline] fn next(&mut self) -> Option<usize> { self.0.next() }
     #[inline] fn size_hint(&self) -> (usize, Option<usize>) { self.0.size_hint() }
+    #[inline] fn count(self) -> usize { self.0.count() }
 }
 
 impl<'a, B: BitBlock> IntoIterator for &'a BitSet<B> {
@@ -977,12 +1011,14 @@ mod tests {
 
         let idxs: Vec<_> = bit_vec.iter().collect();
         assert_eq!(idxs, [0, 2, 3]);
+        assert_eq!(bit_vec.iter().count(), 3);
 
         let long: BitSet = (0..10000).filter(|&n| n % 2 == 0).collect();
         let real: Vec<_> = (0..10000/2).map(|x| x*2).collect();
 
         let idxs: Vec<_> = long.iter().collect();
         assert_eq!(idxs, real);
+        assert_eq!(long.iter().count(), real.len());
     }
 
     #[test]
@@ -1048,6 +1084,7 @@ mod tests {
         let expected = [3, 5, 11, 77];
         let actual: Vec<_> = a.intersection(&b).collect();
         assert_eq!(actual, expected);
+        assert_eq!(a.intersection(&b).count(), expected.len());
     }
 
     #[test]
@@ -1067,6 +1104,7 @@ mod tests {
         let expected = [1, 5, 500];
         let actual: Vec<_> = a.difference(&b).collect();
         assert_eq!(actual, expected);
+        assert_eq!(a.difference(&b).count(), expected.len());
     }
 
     #[test]
@@ -1088,6 +1126,7 @@ mod tests {
         let expected = [1, 5, 11, 14, 220];
         let actual: Vec<_> = a.symmetric_difference(&b).collect();
         assert_eq!(actual, expected);
+        assert_eq!(a.symmetric_difference(&b).count(), expected.len());
     }
 
     #[test]
@@ -1113,6 +1152,7 @@ mod tests {
         let expected = [1, 3, 5, 9, 11, 13, 19, 24, 160, 200];
         let actual: Vec<_> = a.union(&b).collect();
         assert_eq!(actual, expected);
+        assert_eq!(a.union(&b).count(), expected.len());
     }
 
     #[test]
