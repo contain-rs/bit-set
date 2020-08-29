@@ -650,8 +650,8 @@ impl<B: BitBlock> BitSet<B> {
     ///
     /// a.append(&mut b);
     ///
-    /// assert_eq!(a.len(), 4);
-    /// assert_eq!(b.len(), 0);
+    /// assert_eq!(a.count(), 4);
+    /// assert_eq!(b.count(), 0);
     /// assert_eq!(a, BitSet::from_bytes(&[0b01110010]));
     /// ```
     pub fn append(&mut self, other: &mut Self) {
@@ -675,8 +675,8 @@ impl<B: BitBlock> BitSet<B> {
     ///
     /// let b = a.split_off(3);
     ///
-    /// assert_eq!(a.len(), 2);
-    /// assert_eq!(b.len(), 2);
+    /// assert_eq!(a.count(), 2);
+    /// assert_eq!(b.count(), 2);
     /// assert_eq!(a, BitSet::from_bytes(&[0b01100000]));
     /// assert_eq!(b, BitSet::from_bytes(&[0b00010010]));
     /// ```
@@ -711,9 +711,11 @@ impl<B: BitBlock> BitSet<B> {
     }
 */
 
-    /// Returns the number of set bits in this set.
+    /// Counts the number of set bits in this set.
+    ///
+    /// Note that this function scans the set to calculate the number.
     #[inline]
-    pub fn len(&self) -> usize  {
+    pub fn count(&self) -> usize  {
         self.bit_vec.blocks().fold(0, |acc, n| acc + n.count_ones() as usize)
     }
 
@@ -1024,7 +1026,7 @@ mod tests {
         assert!(b.insert(400));
         assert!(!b.insert(400));
         assert!(b.contains(400));
-        assert_eq!(b.len(), 3);
+        assert_eq!(b.count(), 3);
     }
 
     #[test]
@@ -1176,8 +1178,8 @@ mod tests {
         let c = a.clone();
         a.union_with(&b);
         b.union_with(&c);
-        assert_eq!(a.len(), 4);
-        assert_eq!(b.len(), 4);
+        assert_eq!(a.count(), 4);
+        assert_eq!(b.count(), 4);
     }
 
     #[test]
@@ -1206,8 +1208,8 @@ mod tests {
         let c = a.clone();
         a.intersect_with(&b);
         b.intersect_with(&c);
-        assert_eq!(a.len(), 2);
-        assert_eq!(b.len(), 2);
+        assert_eq!(a.count(), 2);
+        assert_eq!(b.count(), 2);
     }
 
     #[test]
@@ -1230,8 +1232,8 @@ mod tests {
         let c = a.clone();
         a.difference_with(&b);
         b.difference_with(&c);
-        assert_eq!(a.len(), 1);
-        assert_eq!(b.len(), 1);
+        assert_eq!(a.count(), 1);
+        assert_eq!(b.count(), 1);
     }
 
     #[test]
@@ -1259,8 +1261,8 @@ mod tests {
         let c = a.clone();
         a.symmetric_difference_with(&b);
         b.symmetric_difference_with(&c);
-        assert_eq!(a.len(), 2);
-        assert_eq!(b.len(), 2);
+        assert_eq!(a.count(), 2);
+        assert_eq!(b.count(), 2);
     }
 
     #[test]
@@ -1339,8 +1341,8 @@ mod tests {
 
         a.append(&mut b);
 
-        assert_eq!(a.len(), 4);
-        assert_eq!(b.len(), 0);
+        assert_eq!(a.count(), 4);
+        assert_eq!(b.count(), 0);
         assert!(b.capacity() >= 6);
 
         assert_eq!(a, BitSet::from_bytes(&[0b01110010]));
@@ -1354,8 +1356,8 @@ mod tests {
 
         let b = a.split_off(0);
 
-        assert_eq!(a.len(), 0);
-        assert_eq!(b.len(), 21);
+        assert_eq!(a.count(), 0);
+        assert_eq!(b.count(), 21);
 
         assert_eq!(b, BitSet::from_bytes(&[0b10100000, 0b00010010, 0b10010010,
                                            0b00110011, 0b01101011, 0b10101101]);
@@ -1366,8 +1368,8 @@ mod tests {
 
         let b = a.split_off(50);
 
-        assert_eq!(a.len(), 21);
-        assert_eq!(b.len(), 0);
+        assert_eq!(a.count(), 21);
+        assert_eq!(b.count(), 0);
 
         assert_eq!(a, BitSet::from_bytes(&[0b10100000, 0b00010010, 0b10010010,
                                            0b00110011, 0b01101011, 0b10101101]));
@@ -1378,8 +1380,8 @@ mod tests {
 
         let b = a.split_off(34);
 
-        assert_eq!(a.len(), 12);
-        assert_eq!(b.len(), 9);
+        assert_eq!(a.count(), 12);
+        assert_eq!(b.count(), 9);
 
         assert_eq!(a, BitSet::from_bytes(&[0b10100000, 0b00010010, 0b10010010,
                                            0b00110011, 0b01000000]));
