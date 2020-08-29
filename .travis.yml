@@ -4,7 +4,6 @@ matrix:
   include:
     - rust: stable
     - rust: nightly
-      env: FEATURES="--features nightly"
 script:
     - cargo build $FEATURES
     - cargo test $FEATURES
