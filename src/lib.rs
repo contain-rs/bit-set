@@ -236,7 +236,7 @@ impl BitSet<u32> {
     /// ```
     #[inline]
     pub fn from_bit_vec(bit_vec: BitVec) -> Self {
-        BitSet { bit_vec: bit_vec }
+        BitSet { bit_vec }
     }
 
     pub fn from_bytes(bytes: &[u8]) -> Self {
@@ -816,7 +816,7 @@ impl<B: BitBlock> BitSet<B> {
         }
 
         self.bit_vec.set(value, true);
-        return true;
+        true
     }
 
     /// Removes a value from the set. Returns `true` if the value was
@@ -828,7 +828,7 @@ impl<B: BitBlock> BitSet<B> {
 
         self.bit_vec.set(value, false);
 
-        return true;
+        true
     }
 }
 
@@ -858,7 +858,7 @@ where
     T: Iterator<Item = B>,
 {
     fn from_blocks(mut blocks: T) -> BlockIter<T, B> {
-        let h = blocks.next().unwrap_or(B::zero());
+        let h = blocks.next().unwrap_or_else(B::zero);
         BlockIter {
             tail: blocks,
             head: h,
@@ -930,7 +930,7 @@ impl<'a, B: BitBlock> Iterator for TwoBitPositions<'a, B> {
             (Some(a), Some(b)) => Some((self.merge)(a, b)),
             (Some(a), None) => Some((self.merge)(a, B::zero())),
             (None, Some(b)) => Some((self.merge)(B::zero(), b)),
-            _ => return None,
+            _ => None,
         }
     }
 
@@ -1073,7 +1073,7 @@ mod tests {
             for &l in &lengths {
                 let bitset = BitSet::from_bit_vec(BitVec::from_elem(l, b));
                 assert_eq!(bitset.contains(1), b);
-                assert_eq!(bitset.contains((l - 1)), b);
+                assert_eq!(bitset.contains(l - 1), b);
                 assert!(!bitset.contains(l));
             }
         }
