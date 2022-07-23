@@ -412,11 +412,12 @@ impl<B: BitBlock> BitSet<B> {
             .rev()
             .take_while(|&&n| n == B::zero())
             .count();
-        // Truncate
-        let trunc_len = cmp::max(old_len - n, 1);
+        // Truncate away all empty trailing blocks, then shrink_to_fit
+        let trunc_len = old_len - n;
         unsafe {
             bit_vec.storage_mut().truncate(trunc_len);
             bit_vec.set_len(trunc_len * B::bits());
+            bit_vec.shrink_to_fit();
         }
     }
 
@@ -1369,6 +1370,91 @@ mod tests {
         assert_eq!(b.cmp(&c), Equal);
         assert_eq!(c.cmp(&a), Less);
         assert_eq!(c.cmp(&b), Equal);
+    }
+
+    #[test]
+    fn test_bit_set_shrink_to_fit_new() {
+        // There was a strange bug where we refused to truncate to 0
+        // and this would end up actually growing the array in a way
+        // that (safely corrupted the state).
+        let mut a = BitSet::new();
+        assert_eq!(a.len(), 0);
+        assert_eq!(a.capacity(), 0);
+        a.shrink_to_fit();
+        assert_eq!(a.len(), 0);
+        assert_eq!(a.capacity(), 0);
+        assert!(!a.contains(1));
+        a.insert(3);
+        assert!(a.contains(3));
+        assert_eq!(a.len(), 1);
+        assert!(a.capacity() > 0);
+        a.shrink_to_fit();
+        assert!(a.contains(3));
+        assert_eq!(a.len(), 1);
+        assert!(a.capacity() > 0);
+    }
+
+    #[test]
+    fn test_bit_set_shrink_to_fit() {
+        let mut a = BitSet::new();
+        assert_eq!(a.len(), 0);
+        assert_eq!(a.capacity(), 0);
+        a.insert(259);
+        a.insert(98);
+        a.insert(3);
+        assert_eq!(a.len(), 3);
+        assert!(a.capacity() > 0);
+        assert!(!a.contains(1));
+        assert!(a.contains(259));
+        assert!(a.contains(98));
+        assert!(a.contains(3));
+
+        a.shrink_to_fit();
+        assert!(!a.contains(1));
+        assert!(a.contains(259));
+        assert!(a.contains(98));
+        assert!(a.contains(3));
+        assert_eq!(a.len(), 3);
+        assert!(a.capacity() > 0);
+
+        let old_cap = a.capacity();
+        assert!(a.remove(259));
+        a.shrink_to_fit();
+        assert!(a.capacity() < old_cap, "{} {}", a.capacity(), old_cap);
+        assert!(!a.contains(1));
+        assert!(!a.contains(259));
+        assert!(a.contains(98));
+        assert!(a.contains(3));
+        assert_eq!(a.len(), 2);
+
+        let old_cap2 = a.capacity();
+        a.clear();
+        assert_eq!(a.capacity(), old_cap2);
+        assert_eq!(a.len(), 0);
+        assert!(!a.contains(1));
+        assert!(!a.contains(259));
+        assert!(!a.contains(98));
+        assert!(!a.contains(3));
+
+        a.insert(512);
+        assert!(a.capacity() > 0);
+        assert_eq!(a.len(), 1);
+        assert!(a.contains(512));
+        assert!(!a.contains(1));
+        assert!(!a.contains(259));
+        assert!(!a.contains(98));
+        assert!(!a.contains(3));
+
+        a.remove(512);
+        a.shrink_to_fit();
+        assert_eq!(a.capacity(), 0);
+        assert_eq!(a.len(), 0);
+        assert!(!a.contains(512));
+        assert!(!a.contains(1));
+        assert!(!a.contains(259));
+        assert!(!a.contains(98));
+        assert!(!a.contains(3));
+        assert!(!a.contains(0));
     }
 
     #[test]
