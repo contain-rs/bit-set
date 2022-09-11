@@ -917,7 +917,7 @@ where
     #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
         match self.tail.size_hint() {
-            (_, Some(h)) => (0, Some(1 + h * B::bits())),
+            (_, Some(h)) => (0, Some((1 + h) * B::bits())),
             _ => (0, None),
         }
     }
