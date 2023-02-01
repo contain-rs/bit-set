@@ -52,6 +52,8 @@
 extern crate bit_vec;
 #[cfg(all(test, feature = "nightly"))]
 extern crate rand;
+#[cfg(feature = "serde")]
+extern crate serde2;
 #[cfg(all(test, feature = "nightly"))]
 extern crate test;
 
@@ -65,6 +67,9 @@ use core::cmp::Ordering;
 use core::fmt;
 use core::hash;
 use core::iter::{self, Chain, Enumerate, FromIterator, Repeat, Skip, Take};
+
+#[cfg(feature = "serde")]
+use serde2::{Deserialize, Deserializer, Serialize, Serializer};
 
 type MatchWords<'a, B> = Chain<Enumerate<Blocks<'a, B>>, Skip<Take<Enumerate<Repeat<B>>>>>;
 
@@ -844,6 +849,22 @@ impl<B: BitBlock> hash::Hash for BitSet<B> {
         for pos in self {
             pos.hash(state);
         }
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<B: BitBlock + Serialize> Serialize for BitSet<B> {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        self.bit_vec.serialize(serializer)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de, B: BitBlock + Deserialize<'de>> Deserialize<'de> for BitSet<B> {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        Ok(Self {
+            bit_vec: BitVec::deserialize(deserializer)?,
+        })
     }
 }
 

@@ -13,6 +13,9 @@ readme = "README.md"
 [dev-dependencies]
 rand = "0.3"
 
+[dependencies]
+serde2 = { package = "serde", version = "1", default-features = true, optional = true }
+
 [dependencies.bit-vec]
 version = "0.6.1"
 default-features = false
@@ -20,3 +23,4 @@ default-features = false
 [features]
 default = ["std"]
 std = ["bit-vec/std"]
+serde = ["serde2", "bit-vec/serde"]
