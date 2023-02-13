@@ -52,7 +52,48 @@ If you want to use bit-set in a program that has `#![no_std]`, just drop default
 bit-set = { version = "0.5", default-features = false }
 ```
 
-<!-- cargo-rdme -->
+<!-- cargo-rdme start -->
+
+An implementation of a set using a bit vector as an underlying
+representation for holding unsigned numerical elements.
+
+It should also be noted that the amount of storage necessary for holding a
+set of objects is proportional to the maximum of the objects when viewed
+as a `usize`.
+
+### Examples
+
+```rust
+use bit_set::BitSet;
+
+// It's a regular set
+let mut s = BitSet::new();
+s.insert(0);
+s.insert(3);
+s.insert(7);
+
+s.remove(7);
+
+if !s.contains(7) {
+    println!("There is no 7");
+}
+
+// Can initialize from a `BitVec`
+let other = BitSet::from_bytes(&[0b11010000]);
+
+s.union_with(&other);
+
+// Print 0, 1, 3 in some order
+for x in s.iter() {
+    println!("{}", x);
+}
+
+// Can convert back to a `BitVec`
+let bv = s.into_bit_vec();
+assert!(bv[3]);
+```
+
+<!-- cargo-rdme end -->
 
 ## License
 
