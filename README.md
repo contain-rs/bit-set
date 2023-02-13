@@ -9,7 +9,6 @@
 [![Documentation][docs.rs badge]][docs.rs link]
 ![Rust CI][github ci badge]
 [![rustc 1.0+]][Rust 1.0]
-[![serde_derive: rustc 1.31+]][Rust 1.31]
 <br />
 <br />
 [![Dependency Status][deps.rs status]][deps.rs link]
@@ -53,6 +52,8 @@ bit-set = { version = "0.5", default-features = false }
 ```
 
 <!-- cargo-rdme start -->
+
+### Description
 
 An implementation of a set using a bit vector as an underlying
 representation for holding unsigned numerical elements.
