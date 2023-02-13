@@ -8,6 +8,8 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+//! # Description
+//!
 //! An implementation of a set using a bit vector as an underlying
 //! representation for holding unsigned numerical elements.
 //!
