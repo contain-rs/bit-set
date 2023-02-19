@@ -11,7 +11,7 @@ keywords = ["data-structures", "bitset"]
 readme = "README.md"
 
 [dev-dependencies]
-rand = "0.3"
+rand = "0.8.5"
 
 [dependencies.bit-vec]
 version = "0.6.1"
