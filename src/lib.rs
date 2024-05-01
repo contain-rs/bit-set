@@ -419,8 +419,8 @@ impl<B: BitBlock> BitSet<B> {
         unsafe {
             bit_vec.storage_mut().truncate(trunc_len);
             bit_vec.set_len(trunc_len * B::bits());
-            bit_vec.shrink_to_fit();
         }
+        bit_vec.shrink_to_fit();
     }
 
     /// Iterator over each usize stored in the `BitSet`.
