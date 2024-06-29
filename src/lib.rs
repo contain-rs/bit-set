@@ -501,8 +501,8 @@ impl<B: BitBlock> BitSet<B> {
                 set: self.bit_vec.blocks(),
                 other: other.bit_vec.blocks(),
                 merge: bitand,
-            }), 
-            n: min
+            }),
+            n: min,
         }
     }
 
@@ -890,7 +890,7 @@ pub struct Intersection<'a, B: 'a> {
     // number of elements in the intersection, and count it
     // down as we return elements. If we reach zero, we can
     // stop.
-    n: usize
+    n: usize,
 }
 #[derive(Clone)]
 pub struct Difference<'a, B: 'a>(BlockIter<TwoBitPositions<'a, B>, B>);
@@ -926,7 +926,6 @@ where
     fn count(self) -> usize {
         self.head.count_ones() + self.tail.map(|block| block.count_ones()).sum::<usize>()
     }
-
 
     #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -966,31 +965,51 @@ impl<'a, B: BitBlock> Iterator for TwoBitPositions<'a, B> {
 impl<'a, B: BitBlock> Iterator for Iter<'a, B> {
     type Item = usize;
 
-    #[inline] fn next(&mut self) -> Option<usize> { self.0.next() }
-    #[inline] fn size_hint(&self) -> (usize, Option<usize>) { self.0.size_hint() }
-    #[inline] fn count(self) -> usize { self.0.count() }
+    #[inline]
+    fn next(&mut self) -> Option<usize> {
+        self.0.next()
+    }
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.0.size_hint()
+    }
+    #[inline]
+    fn count(self) -> usize {
+        self.0.count()
+    }
 }
 
 impl<'a, B: BitBlock> Iterator for Union<'a, B> {
     type Item = usize;
 
-    #[inline] fn next(&mut self) -> Option<usize> { self.0.next() }
-    #[inline] fn size_hint(&self) -> (usize, Option<usize>) { self.0.size_hint() }
-    #[inline] fn count(self) -> usize { self.0.count() }
+    #[inline]
+    fn next(&mut self) -> Option<usize> {
+        self.0.next()
+    }
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.0.size_hint()
+    }
+    #[inline]
+    fn count(self) -> usize {
+        self.0.count()
+    }
 }
 
 impl<'a, B: BitBlock> Iterator for Intersection<'a, B> {
     type Item = usize;
 
-    #[inline] fn next(&mut self) -> Option<usize> { 
+    #[inline]
+    fn next(&mut self) -> Option<usize> {
         if self.n != 0 {
             self.n -= 1;
-            self.iter.next() 
+            self.iter.next()
         } else {
             None
         }
     }
-    #[inline] fn size_hint(&self) -> (usize, Option<usize>) { 
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
         // We could invoke self.iter.size_hint() and incorporate that into the hint.
         // In practice, that does not seem worthwhile because the lower bound will
         // always be zero and the upper bound could only possibly less then n in a
@@ -998,23 +1017,44 @@ impl<'a, B: BitBlock> Iterator for Intersection<'a, B> {
         // in a partially iterated iterator, so it did not seem worthwhile.
         (0, Some(self.n))
     }
-    #[inline] fn count(self) -> usize { self.iter.count() }
+    #[inline]
+    fn count(self) -> usize {
+        self.iter.count()
+    }
 }
 
 impl<'a, B: BitBlock> Iterator for Difference<'a, B> {
     type Item = usize;
 
-    #[inline] fn next(&mut self) -> Option<usize> { self.0.next() }
-    #[inline] fn size_hint(&self) -> (usize, Option<usize>) { self.0.size_hint() }
-    #[inline] fn count(self) -> usize { self.0.count() }
+    #[inline]
+    fn next(&mut self) -> Option<usize> {
+        self.0.next()
+    }
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.0.size_hint()
+    }
+    #[inline]
+    fn count(self) -> usize {
+        self.0.count()
+    }
 }
 
 impl<'a, B: BitBlock> Iterator for SymmetricDifference<'a, B> {
     type Item = usize;
 
-    #[inline] fn next(&mut self) -> Option<usize> { self.0.next() }
-    #[inline] fn size_hint(&self) -> (usize, Option<usize>) { self.0.size_hint() }
-    #[inline] fn count(self) -> usize { self.0.count() }
+    #[inline]
+    fn next(&mut self) -> Option<usize> {
+        self.0.next()
+    }
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        self.0.size_hint()
+    }
+    #[inline]
+    fn count(self) -> usize {
+        self.0.count()
+    }
 }
 
 impl<'a, B: BitBlock> IntoIterator for &'a BitSet<B> {
