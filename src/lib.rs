@@ -1562,7 +1562,7 @@ mod tests {
 mod bench {
     use super::BitSet;
     use bit_vec::BitVec;
-    use rand::{thread_rng, RngCore, rngs::ThreadRng};
+    use rand::{rngs::ThreadRng, thread_rng, RngCore};
 
     use test::{black_box, Bencher};
 
