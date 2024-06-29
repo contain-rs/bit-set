@@ -20,3 +20,4 @@ default-features = false
 [features]
 default = ["std"]
 std = ["bit-vec/std"]
+bench = []

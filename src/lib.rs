@@ -50,15 +50,15 @@
 //! ```
 
 #![no_std]
-#![cfg_attr(all(test, feature = "nightly"), feature(test))]
+#![cfg_attr(feature = "bench", feature(test))]
+
 extern crate bit_vec;
-#[cfg(all(test, feature = "nightly"))]
+#[cfg(test)]
 extern crate rand;
-#[cfg(all(test, feature = "nightly"))]
+#[cfg(feature = "bench")]
 extern crate test;
 
-#[cfg(test)]
-#[macro_use]
+#[cfg(any(test, feature = "std"))]
 extern crate std;
 
 use bit_vec::{BitBlock, BitVec, Blocks};
@@ -393,11 +393,12 @@ impl<B: BitBlock> BitSet<B> {
     /// use bit_set::BitSet;
     ///
     /// let mut s = BitSet::new();
-    /// s.insert(32183231);
-    /// s.remove(32183231);
+    /// s.insert(3231);
+    /// s.remove(3231);
     ///
     /// // Internal storage will probably be bigger than necessary
     /// println!("old capacity: {}", s.capacity());
+    /// assert!(s.capacity() >= 3231);
     ///
     /// // Now should be smaller
     /// s.shrink_to_fit();
@@ -1030,6 +1031,7 @@ mod tests {
     use bit_vec::BitVec;
     use std::cmp::Ordering::{Equal, Greater, Less};
     use std::vec::Vec;
+    use std::{format, vec};
 
     #[test]
     fn test_bit_set_show() {
@@ -1556,11 +1558,11 @@ mod tests {
     */
 }
 
-#[cfg(all(test, feature = "nightly"))]
+#[cfg(feature = "bench")]
 mod bench {
     use super::BitSet;
     use bit_vec::BitVec;
-    use rand::{thread_rng, Rng, ThreadRng};
+    use rand::{thread_rng, RngCore, rngs::ThreadRng};
 
     use test::{black_box, Bencher};
 
