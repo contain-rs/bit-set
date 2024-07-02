@@ -2,7 +2,7 @@
 name = "bit-set"
 version = "0.6.0"
 authors = ["Alexis Beingessner <a.beingessner@gmail.com>"]
-license = "MIT/Apache-2.0"
+license = "Apache-2.0 OR MIT"
 description = "A set of bits"
 repository = "https://github.com/contain-rs/bit-set"
 homepage = "https://github.com/contain-rs/bit-set"
