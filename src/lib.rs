@@ -445,7 +445,7 @@ impl<B: BitBlock> BitSet<B> {
     }
 
     /// Iterator over each usize stored in `self` union `other`.
-    /// See [union_with](#method.union_with) for an efficient in-place version.
+    /// See [`union_with`](Self::union_with) for an efficient in-place version.
     ///
     /// # Examples
     ///
@@ -474,7 +474,7 @@ impl<B: BitBlock> BitSet<B> {
     }
 
     /// Iterator over each usize stored in `self` intersect `other`.
-    /// See [intersect_with](#method.intersect_with) for an efficient in-place version.
+    /// See [`intersect_with`](Self::intersect_with) for an efficient in-place version.
     ///
     /// # Examples
     ///
@@ -507,7 +507,7 @@ impl<B: BitBlock> BitSet<B> {
     }
 
     /// Iterator over each usize stored in the `self` setminus `other`.
-    /// See [difference_with](#method.difference_with) for an efficient in-place version.
+    /// See [`difference_with`](Self::difference_with) for an efficient in-place version.
     ///
     /// # Examples
     ///
@@ -543,8 +543,8 @@ impl<B: BitBlock> BitSet<B> {
     }
 
     /// Iterator over each usize stored in the symmetric difference of `self` and `other`.
-    /// See [symmetric_difference_with](#method.symmetric_difference_with) for
-    /// an efficient in-place version.
+    /// See [`symmetric_difference_with`](Self::symmetric_difference_with) for an efficient
+    /// in-place version.
     ///
     /// # Examples
     ///
