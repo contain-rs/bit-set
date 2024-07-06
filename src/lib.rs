@@ -815,7 +815,7 @@ impl<B: BitBlock> BitSet<B> {
         // Ensure we have enough space to hold the new element
         let len = self.bit_vec.len();
         if value >= len {
-            self.bit_vec.grow(value - len + 1, false)
+            self.bit_vec.grow(value - len + 1, false);
         }
 
         self.bit_vec.set(value, true);
