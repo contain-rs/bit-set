@@ -445,7 +445,7 @@ impl<B: BitBlock> BitSet<B> {
     }
 
     /// Iterator over each usize stored in `self` union `other`.
-    /// See [`union_with`](Self::union_with) for an efficient in-place version.
+    /// See [`union_with`] for an efficient in-place version.
     ///
     /// # Examples
     ///
@@ -460,6 +460,8 @@ impl<B: BitBlock> BitSet<B> {
     ///     println!("{}", x);
     /// }
     /// ```
+    ///
+    /// [`union_with`]: Self::union_with
     #[inline]
     pub fn union<'a>(&'a self, other: &'a Self) -> Union<'a, B> {
         fn or<B: BitBlock>(w1: B, w2: B) -> B {
@@ -474,7 +476,7 @@ impl<B: BitBlock> BitSet<B> {
     }
 
     /// Iterator over each usize stored in `self` intersect `other`.
-    /// See [`intersect_with`](Self::intersect_with) for an efficient in-place version.
+    /// See [`intersect_with`] for an efficient in-place version.
     ///
     /// # Examples
     ///
@@ -489,6 +491,8 @@ impl<B: BitBlock> BitSet<B> {
     ///     println!("{}", x);
     /// }
     /// ```
+    ///
+    /// [`intersect_with`]: Self::intersect_with
     #[inline]
     pub fn intersection<'a>(&'a self, other: &'a Self) -> Intersection<'a, B> {
         fn bitand<B: BitBlock>(w1: B, w2: B) -> B {
@@ -507,7 +511,7 @@ impl<B: BitBlock> BitSet<B> {
     }
 
     /// Iterator over each usize stored in the `self` setminus `other`.
-    /// See [`difference_with`](Self::difference_with) for an efficient in-place version.
+    /// See [`difference_with`] for an efficient in-place version.
     ///
     /// # Examples
     ///
@@ -529,6 +533,8 @@ impl<B: BitBlock> BitSet<B> {
     ///     println!("{}", x);
     /// }
     /// ```
+    ///
+    /// [`difference_with`]: Self::difference_with
     #[inline]
     pub fn difference<'a>(&'a self, other: &'a Self) -> Difference<'a, B> {
         fn diff<B: BitBlock>(w1: B, w2: B) -> B {
@@ -543,8 +549,7 @@ impl<B: BitBlock> BitSet<B> {
     }
 
     /// Iterator over each usize stored in the symmetric difference of `self` and `other`.
-    /// See [`symmetric_difference_with`](Self::symmetric_difference_with) for an efficient
-    /// in-place version.
+    /// See [`symmetric_difference_with`] for an efficient in-place version.
     ///
     /// # Examples
     ///
@@ -559,6 +564,8 @@ impl<B: BitBlock> BitSet<B> {
     ///     println!("{}", x);
     /// }
     /// ```
+    ///
+    /// [`symmetric_difference_with`]: Self::symmetric_difference_with
     #[inline]
     pub fn symmetric_difference<'a>(&'a self, other: &'a Self) -> SymmetricDifference<'a, B> {
         fn bitxor<B: BitBlock>(w1: B, w2: B) -> B {
