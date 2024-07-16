@@ -48,6 +48,7 @@
 //! let bv = s.into_bit_vec();
 //! assert!(bv[3]);
 //! ```
+#![doc(html_root_url = "https://docs.rs/bit-set/0.7.0")]
 
 #![no_std]
 #![cfg_attr(feature = "bench", feature(test))]

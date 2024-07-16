@@ -20,6 +20,8 @@ jobs:
       run: cargo test --verbose
     - name: Run tests for serde feature
       run: cargo test --features serde --verbose
+    - name: Run tests for serde feature and benches
+      run: cargo test --features serde,bench --verbose
       
   miri:
     name: "Miri"
