@@ -53,6 +53,9 @@
 #![cfg_attr(feature = "bench", feature(test))]
 
 extern crate bit_vec;
+#[cfg(feature = "serde")]
+extern crate serde;
+
 #[cfg(test)]
 extern crate rand;
 #[cfg(feature = "bench")]
@@ -119,6 +122,7 @@ fn match_words<'a, 'b, B: BitBlock>(
     }
 }
 
+#[cfg_attr(feature = "serde", derive(serde::Deserialize, serde::Serialize))]
 pub struct BitSet<B = u32> {
     bit_vec: BitVec<B>,
 }
@@ -341,15 +345,40 @@ impl<B: BitBlock> BitSet<B> {
     /// ```
     /// use bit_set::BitSet;
     ///
-    /// let mut s = BitSet::new();
-    /// s.insert(0);
+    /// let mut set = BitSet::new();
+    /// set.insert(0);
     ///
-    /// let bv = s.get_ref();
+    /// let bv = set.get_ref();
     /// assert_eq!(bv[0], true);
     /// ```
     #[inline]
     pub fn get_ref(&self) -> &BitVec<B> {
         &self.bit_vec
+    }
+
+    /// Returns a mutable reference to the underlying bit vector.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bit_set::BitSet;
+    ///
+    /// let mut set = BitSet::new();
+    /// set.insert(0);
+    /// set.insert(3);
+    ///
+    /// {
+    ///     let bv = set.get_mut();
+    ///     bv.set(1, true);
+    /// }
+    ///
+    /// assert!(set.contains(0));
+    /// assert!(set.contains(1));
+    /// assert!(set.contains(3));
+    /// ```
+    #[inline]
+    pub fn get_mut(&mut self) -> &mut BitVec<B> {
+        &mut self.bit_vec
     }
 
     #[inline]
@@ -839,6 +868,11 @@ impl<B: BitBlock> BitSet<B> {
         self.bit_vec.set(value, false);
 
         true
+    }
+
+    /// Excludes `element` and all greater elements from the `BitSet`.
+    pub fn truncate(&mut self, element: usize) {
+        self.bit_vec.truncate(element);
     }
 }
 
@@ -1546,6 +1580,45 @@ mod tests {
 
         assert!(a.remove(1000));
         assert!(b.contains(1000));
+    }
+
+    #[test]
+    fn test_truncate() {
+        let bytes = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF];
+
+        let mut s = BitSet::from_bytes(&bytes);
+        s.truncate(5 * 8);
+
+        assert_eq!(s, BitSet::from_bytes(&bytes[..5]));
+        assert_eq!(s.len(), 5 * 8);
+        s.truncate(4 * 8);
+        assert_eq!(s, BitSet::from_bytes(&bytes[..4]));
+        assert_eq!(s.len(), 4 * 8);
+        // Truncating to a size > s.len() should be a noop
+        s.truncate(5 * 8);
+        assert_eq!(s, BitSet::from_bytes(&bytes[..4]));
+        assert_eq!(s.len(), 4 * 8);
+        s.truncate(8);
+        assert_eq!(s, BitSet::from_bytes(&bytes[..1]));
+        assert_eq!(s.len(), 8);
+        s.truncate(0);
+        assert_eq!(s, BitSet::from_bytes(&[]));
+        assert_eq!(s.len(), 0);
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn test_serialization() {
+        let bset: BitSet = BitSet::new();
+        let serialized = serde_json::to_string(&bset).unwrap();
+        let unserialized: BitSet = serde_json::from_str(&serialized).unwrap();
+        assert_eq!(bset, unserialized);
+
+        let elems: Vec<usize> = vec![11, 42, 100, 101];
+        let bset: BitSet = elems.iter().map(|n| *n).collect();
+        let serialized = serde_json::to_string(&bset).unwrap();
+        let unserialized = serde_json::from_str(&serialized).unwrap();
+        assert_eq!(bset, unserialized);
     }
 
     /*
