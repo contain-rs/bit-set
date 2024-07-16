@@ -33,6 +33,8 @@ jobs:
           cargo miri setup
       - name: Test with Miri
         run: MIRIFLAGS=-Zmiri-strict-provenance cargo miri test
+      - name: Run tests for serde feature
+        run: MIRIFLAGS=-Zmiri-strict-provenance cargo miri test --features serde
   
   fmt:
     runs-on: ubuntu-latest
