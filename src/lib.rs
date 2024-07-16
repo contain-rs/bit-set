@@ -48,7 +48,7 @@
 //! let bv = s.into_bit_vec();
 //! assert!(bv[3]);
 //! ```
-#![doc(html_root_url = "https://docs.rs/bit-set/0.7.0")]
+#![doc(html_root_url = "https://docs.rs/bit-set/0.8.0")]
 #![no_std]
 
 extern crate bit_vec;

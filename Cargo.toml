@@ -1,6 +1,6 @@
 [package]
 name = "bit-set"
-version = "0.7.0"
+version = "0.8.0"
 authors = ["Alexis Beingessner <a.beingessner@gmail.com>"]
 license = "Apache-2.0 OR MIT"
 description = "A set of bits"
@@ -15,7 +15,7 @@ edition = "2015"
 serde = { version = "1.0", features = ["derive"], optional = true }
 
 [dependencies.bit-vec]
-version = "0.7.0"
+version = "0.8.0"
 default-features = false
 
 [dev-dependencies]
