@@ -10,14 +10,19 @@ documentation = "https://docs.rs/bit-set/"
 keywords = ["data-structures", "bitset"]
 readme = "README.md"
 
-[dev-dependencies]
-rand = "0.8"
+[dependencies]
+serde = { version = "1.0", features = ["derive"], optional = true }
 
 [dependencies.bit-vec]
 version = "0.7.0"
 default-features = false
 
+[dev-dependencies]
+rand = "0.8"
+serde_json = "1.0"
+
 [features]
 default = ["std"]
 std = ["bit-vec/std"]
+serde = ["dep:serde", "bit-vec/serde"]
 bench = []
