@@ -49,6 +49,9 @@
 //! assert!(bv[3]);
 //! ```
 #![doc(html_root_url = "https://docs.rs/bit-set/0.8.0")]
+#![forbid(clippy::shadow_reuse)]
+#![forbid(clippy::shadow_same)]
+#![forbid(clippy::shadow_unrelated)]
 #![no_std]
 
 extern crate bit_vec;
@@ -986,15 +989,16 @@ impl<'a, B: BitBlock> Iterator for TwoBitPositions<'a, B> {
 
     #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
-        let (a, au) = self.set.size_hint();
-        let (b, bu) = self.other.size_hint();
+        let (first_lower_bound, first_upper_bound) = self.set.size_hint();
+        let (second_lower_bound, second_upper_bound) = self.other.size_hint();
 
-        let upper = match (au, bu) {
-            (Some(au), Some(bu)) => Some(cmp::max(au, bu)),
-            _ => None,
-        };
+        let upper_bound = first_upper_bound.zip(second_upper_bound);
 
-        (cmp::max(a, b), upper)
+        let get_max = |(a, b)| cmp::max(a, b);
+        (
+            cmp::max(first_lower_bound, second_lower_bound),
+            upper_bound.map(get_max),
+        )
     }
 }
 
