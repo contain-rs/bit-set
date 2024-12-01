@@ -57,6 +57,25 @@ If you want to use bit-set in a program that has `#![no_std]`, just drop default
 bit-set = { version = "0.8", default-features = false }
 ```
 
+If you want to use serde with the alloc crate instead of std, just use the `serde_no_std` feature:
+
+```toml
+[dependencies]
+bit-set = { version = "0.8", default-features = false, features = ["serde", "serde_no_std"] }
+```
+
+If you want [borsh-rs](https://github.com/near/borsh-rs) support, include it like this:
+
+```toml
+[dependencies]
+bit-set = { version = "0.8", features = ["borsh"] }
+```
+
+Other available serialization libraries can be enabled with the
+[`miniserde`](https://github.com/dtolnay/miniserde) and
+[`nanoserde`](https://github.com/not-fl3/nanoserde) features.
+
+
 <!-- cargo-rdme start -->
 
 ### Description
