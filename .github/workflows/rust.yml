@@ -52,7 +52,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [1.56.0, 1.57.0]
+        rust: [1.60.0, 1.61.0]
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{matrix.rust}}
+      - run: cargo build
+
+  msrv-test:
+    name: Rust ${{matrix.rust}}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rust: [1.63.0, 1.64.0]
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
