@@ -22,6 +22,11 @@ jobs:
       run: cargo test --no-default-features --verbose
     - name: Run tests for serde
       run: cargo test --features serde --verbose
+    - run: cargo test --no-default-features --features serde_no_std
+    - run: cargo test --features borsh
+    - run: cargo test --features miniserde
+    - run: cargo test --features nanoserde
+    - run: cargo test --features nanoserde --no-default-features
       
   miri:
     name: "Miri"
@@ -62,7 +67,27 @@ jobs:
       - run: cargo build
       - run: cargo test
       - run: cargo test --no-default-features
+      - run: cargo test --no-default-features --features serde_no_std
       - run: cargo test --features serde
+      - run: cargo test --features miniserde
+
+  msrv-borsh:
+    name: Rust ${{matrix.rust}}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rust: [1.67.0, 1.68.0]
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{matrix.rust}}
+      - run: cargo test
+      - run: cargo test --features borsh
+      - run: cargo test --features nanoserde
+      - run: cargo test --features nanoserde --no-default-features
 
   clippy:
     runs-on: ubuntu-latest

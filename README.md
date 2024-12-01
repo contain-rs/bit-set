@@ -9,6 +9,8 @@
 [![Documentation][docs.rs badge]][docs.rs link]
 ![Rust CI][github ci badge]
 ![rustc 1.63+]
+![borsh: rustc 1.67+]
+![nanoserde: rustc 1.67+]
 <br />
 <br />
 [![Dependency Status][deps.rs status]][deps.rs link]
@@ -23,6 +25,8 @@
 [docs.rs link]: https://docs.rs/bit-set/0.8.0/bit_set/
 [github ci badge]: https://github.com/contain-rs/bit-set/workflows/Rust/badge.svg?branch=master
 [rustc 1.63+]: https://img.shields.io/badge/rustc-1.63%2B-blue.svg
+[borsh: rustc 1.67+]: https://img.shields.io/badge/borsh:%20rustc-1.67%2B-blue.svg
+[nanoserde: rustc 1.67+]: https://img.shields.io/badge/nanoserde:%20rustc-1.67%2B-blue.svg
 [deps.rs status]: https://deps.rs/crate/bit-set/0.8.0/status.svg
 [deps.rs link]: https://deps.rs/crate/bit-set/0.8.0
 [shields.io download count]: https://img.shields.io/crates/d/bit-set.svg
@@ -56,6 +60,25 @@ If you want to use bit-set in a program that has `#![no_std]`, just drop default
 [dependencies]
 bit-set = { version = "0.8", default-features = false }
 ```
+
+If you want to use serde with the alloc crate instead of std, just use the `serde_no_std` feature:
+
+```toml
+[dependencies]
+bit-set = { version = "0.8", default-features = false, features = ["serde", "serde_no_std"] }
+```
+
+If you want [borsh-rs](https://github.com/near/borsh-rs) support, include it like this:
+
+```toml
+[dependencies]
+bit-set = { version = "0.8", features = ["borsh"] }
+```
+
+Other available serialization libraries can be enabled with the
+[`miniserde`](https://github.com/dtolnay/miniserde) and
+[`nanoserde`](https://github.com/not-fl3/nanoserde) features.
+
 
 <!-- cargo-rdme start -->
 
