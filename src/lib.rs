@@ -901,6 +901,14 @@ impl<B: BitBlock> BitSet<B> {
 
 impl<B: BitBlock> fmt::Debug for BitSet<B> {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        fmt.debug_struct("BitSet")
+            .field("bit_vec", &self.bit_vec)
+            .finish()
+    }
+}
+
+impl<B: BitBlock> fmt::Display for BitSet<B> {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         fmt.debug_set().entries(self).finish()
     }
 }
@@ -1144,13 +1152,27 @@ mod tests {
     use std::{format, vec};
 
     #[test]
-    fn test_bit_set_show() {
+    fn test_bit_set_display() {
         let mut s = BitSet::new();
         s.insert(1);
         s.insert(10);
         s.insert(50);
         s.insert(2);
-        assert_eq!("{1, 2, 10, 50}", format!("{:?}", s));
+        assert_eq!("{1, 2, 10, 50}", format!("{}", s));
+    }
+
+    #[test]
+    fn test_bit_set_debug() {
+        let mut s = BitSet::new();
+        s.insert(1);
+        s.insert(10);
+        s.insert(50);
+        s.insert(2);
+        let expected = "BitSet { bit_vec: BitVec { storage: \
+        \"01100000001000000000000000000000 \
+        0000000000000000001\", nbits: 51 } }";
+        let actual = format!("{:?}", s);
+        assert_eq!(expected, actual);
     }
 
     #[test]
