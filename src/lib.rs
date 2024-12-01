@@ -51,11 +51,6 @@
 #![doc(html_root_url = "https://docs.rs/bit-set/0.8.0")]
 #![no_std]
 
-extern crate bit_vec;
-
-#[cfg(feature = "serde")]
-extern crate serde;
-
 #[cfg(any(test, feature = "std"))]
 extern crate std;
 
