@@ -54,11 +54,6 @@
 #![deny(clippy::shadow_unrelated)]
 #![no_std]
 
-extern crate bit_vec;
-
-#[cfg(feature = "serde")]
-extern crate serde;
-
 #[cfg(any(test, feature = "std"))]
 extern crate std;
 
