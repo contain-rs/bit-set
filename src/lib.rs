@@ -49,6 +49,9 @@
 //! assert!(bv[3]);
 //! ```
 #![doc(html_root_url = "https://docs.rs/bit-set/0.8.0")]
+#![deny(clippy::shadow_reuse)]
+#![deny(clippy::shadow_same)]
+#![deny(clippy::shadow_unrelated)]
 #![no_std]
 
 extern crate bit_vec;
@@ -972,7 +975,7 @@ where
     }
 }
 
-impl<'a, B: BitBlock> Iterator for TwoBitPositions<'a, B> {
+impl<B: BitBlock> Iterator for TwoBitPositions<'_, B> {
     type Item = B;
 
     fn next(&mut self) -> Option<B> {
@@ -986,19 +989,20 @@ impl<'a, B: BitBlock> Iterator for TwoBitPositions<'a, B> {
 
     #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
-        let (a, au) = self.set.size_hint();
-        let (b, bu) = self.other.size_hint();
+        let (first_lower_bound, first_upper_bound) = self.set.size_hint();
+        let (second_lower_bound, second_upper_bound) = self.other.size_hint();
 
-        let upper = match (au, bu) {
-            (Some(au), Some(bu)) => Some(cmp::max(au, bu)),
-            _ => None,
-        };
+        let upper_bound = first_upper_bound.zip(second_upper_bound);
 
-        (cmp::max(a, b), upper)
+        let get_max = |(a, b)| cmp::max(a, b);
+        (
+            cmp::max(first_lower_bound, second_lower_bound),
+            upper_bound.map(get_max),
+        )
     }
 }
 
-impl<'a, B: BitBlock> Iterator for Iter<'a, B> {
+impl<B: BitBlock> Iterator for Iter<'_, B> {
     type Item = usize;
 
     #[inline]
@@ -1015,7 +1019,7 @@ impl<'a, B: BitBlock> Iterator for Iter<'a, B> {
     }
 }
 
-impl<'a, B: BitBlock> Iterator for Union<'a, B> {
+impl<B: BitBlock> Iterator for Union<'_, B> {
     type Item = usize;
 
     #[inline]
@@ -1032,7 +1036,7 @@ impl<'a, B: BitBlock> Iterator for Union<'a, B> {
     }
 }
 
-impl<'a, B: BitBlock> Iterator for Intersection<'a, B> {
+impl<B: BitBlock> Iterator for Intersection<'_, B> {
     type Item = usize;
 
     #[inline]
@@ -1059,7 +1063,7 @@ impl<'a, B: BitBlock> Iterator for Intersection<'a, B> {
     }
 }
 
-impl<'a, B: BitBlock> Iterator for Difference<'a, B> {
+impl<B: BitBlock> Iterator for Difference<'_, B> {
     type Item = usize;
 
     #[inline]
@@ -1076,7 +1080,7 @@ impl<'a, B: BitBlock> Iterator for Difference<'a, B> {
     }
 }
 
-impl<'a, B: BitBlock> Iterator for SymmetricDifference<'a, B> {
+impl<B: BitBlock> Iterator for SymmetricDifference<'_, B> {
     type Item = usize;
 
     #[inline]
@@ -1104,6 +1108,10 @@ impl<'a, B: BitBlock> IntoIterator for &'a BitSet<B> {
 
 #[cfg(test)]
 mod tests {
+    #![allow(clippy::shadow_reuse)]
+    #![allow(clippy::shadow_same)]
+    #![allow(clippy::shadow_unrelated)]
+
     use super::BitSet;
     use bit_vec::BitVec;
     use std::cmp::Ordering::{Equal, Greater, Less};
