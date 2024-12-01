@@ -8,7 +8,8 @@
 [![crates.io][crates.io shield]][crates.io link]
 [![Documentation][docs.rs badge]][docs.rs link]
 ![Rust CI][github ci badge]
-![rustc 1.56+]
+![rustc 1.60+]
+![tests rustc 1.63+]
 <br />
 <br />
 [![Dependency Status][deps.rs status]][deps.rs link]
@@ -21,8 +22,9 @@
 [crates.io link]: https://crates.io/crates/bit-set
 [docs.rs badge]: https://docs.rs/bit-set/badge.svg?version=0.8.0
 [docs.rs link]: https://docs.rs/bit-set/0.8.0/bit_set/
-[github ci badge]: https://github.com/contain-rs/linked-hash-map/workflows/Rust/badge.svg?branch=master
-[rustc 1.56+]: https://img.shields.io/badge/rustc-1.56%2B-blue.svg
+[github ci badge]: https://github.com/contain-rs/bit-set/workflows/Rust/badge.svg?branch=master
+[rustc 1.60+]: https://img.shields.io/badge/rustc-1.60%2B-blue.svg
+[tests rustc 1.63+]: https://img.shields.io/badge/tests:%20rustc-1.60%2B-blue.svg
 [deps.rs status]: https://deps.rs/crate/bit-set/0.8.0/status.svg
 [deps.rs link]: https://deps.rs/crate/bit-set/0.8.0
 [shields.io download count]: https://img.shields.io/crates/d/bit-set.svg
