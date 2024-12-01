@@ -49,9 +49,9 @@
 //! assert!(bv[3]);
 //! ```
 #![doc(html_root_url = "https://docs.rs/bit-set/0.8.0")]
-#![forbid(clippy::shadow_reuse)]
-#![forbid(clippy::shadow_same)]
-#![forbid(clippy::shadow_unrelated)]
+#![deny(clippy::shadow_reuse)]
+#![deny(clippy::shadow_same)]
+#![deny(clippy::shadow_unrelated)]
 #![no_std]
 
 extern crate bit_vec;
@@ -975,7 +975,7 @@ where
     }
 }
 
-impl<'a, B: BitBlock> Iterator for TwoBitPositions<'a, B> {
+impl<B: BitBlock> Iterator for TwoBitPositions<'_, B> {
     type Item = B;
 
     fn next(&mut self) -> Option<B> {
@@ -1002,7 +1002,7 @@ impl<'a, B: BitBlock> Iterator for TwoBitPositions<'a, B> {
     }
 }
 
-impl<'a, B: BitBlock> Iterator for Iter<'a, B> {
+impl<B: BitBlock> Iterator for Iter<'_, B> {
     type Item = usize;
 
     #[inline]
@@ -1019,7 +1019,7 @@ impl<'a, B: BitBlock> Iterator for Iter<'a, B> {
     }
 }
 
-impl<'a, B: BitBlock> Iterator for Union<'a, B> {
+impl<B: BitBlock> Iterator for Union<'_, B> {
     type Item = usize;
 
     #[inline]
@@ -1036,7 +1036,7 @@ impl<'a, B: BitBlock> Iterator for Union<'a, B> {
     }
 }
 
-impl<'a, B: BitBlock> Iterator for Intersection<'a, B> {
+impl<B: BitBlock> Iterator for Intersection<'_, B> {
     type Item = usize;
 
     #[inline]
@@ -1063,7 +1063,7 @@ impl<'a, B: BitBlock> Iterator for Intersection<'a, B> {
     }
 }
 
-impl<'a, B: BitBlock> Iterator for Difference<'a, B> {
+impl<B: BitBlock> Iterator for Difference<'_, B> {
     type Item = usize;
 
     #[inline]
@@ -1080,7 +1080,7 @@ impl<'a, B: BitBlock> Iterator for Difference<'a, B> {
     }
 }
 
-impl<'a, B: BitBlock> Iterator for SymmetricDifference<'a, B> {
+impl<B: BitBlock> Iterator for SymmetricDifference<'_, B> {
     type Item = usize;
 
     #[inline]
@@ -1108,6 +1108,10 @@ impl<'a, B: BitBlock> IntoIterator for &'a BitSet<B> {
 
 #[cfg(test)]
 mod tests {
+    #![allow(clippy::shadow_reuse)]
+    #![allow(clippy::shadow_same)]
+    #![allow(clippy::shadow_unrelated)]
+
     use super::BitSet;
     use bit_vec::BitVec;
     use std::cmp::Ordering::{Equal, Greater, Less};
