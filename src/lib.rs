@@ -783,10 +783,21 @@ impl<B: BitBlock> BitSet<B> {
         }
     */
 
-    /// Returns the number of set bits in this set.
+    /// Counts the number of set bits in this set.
+    ///
+    /// Note that this function scans the set to calculate the number.
     #[inline]
-    pub fn len(&self) -> usize {
+    pub fn count(&self) -> usize {
         self.bit_vec.blocks().fold(0, |acc, n| acc + n.count_ones())
+    }
+
+    /// Counts the number of set bits in this set.
+    ///
+    /// Note that this function scans the set to calculate the number.
+    #[inline]
+    #[deprecated = "use BitVec::count() instead"]
+    pub fn len(&self) -> usize {
+        self.count()
     }
 
     /// Returns whether there are no bits set in this set
@@ -1190,7 +1201,7 @@ mod tests {
         assert!(b.insert(400));
         assert!(!b.insert(400));
         assert!(b.contains(400));
-        assert_eq!(b.len(), 3);
+        assert_eq!(b.count(), 3);
     }
 
     #[test]
@@ -1346,8 +1357,8 @@ mod tests {
         let c = a.clone();
         a.union_with(&b);
         b.union_with(&c);
-        assert_eq!(a.len(), 4);
-        assert_eq!(b.len(), 4);
+        assert_eq!(a.count(), 4);
+        assert_eq!(b.count(), 4);
     }
 
     #[test]
@@ -1376,8 +1387,8 @@ mod tests {
         let c = a.clone();
         a.intersect_with(&b);
         b.intersect_with(&c);
-        assert_eq!(a.len(), 2);
-        assert_eq!(b.len(), 2);
+        assert_eq!(a.count(), 2);
+        assert_eq!(b.count(), 2);
     }
 
     #[test]
@@ -1400,8 +1411,8 @@ mod tests {
         let c = a.clone();
         a.difference_with(&b);
         b.difference_with(&c);
-        assert_eq!(a.len(), 1);
-        assert_eq!(b.len(), 1);
+        assert_eq!(a.count(), 1);
+        assert_eq!(b.count(), 1);
     }
 
     #[test]
@@ -1429,8 +1440,8 @@ mod tests {
         let c = a.clone();
         a.symmetric_difference_with(&b);
         b.symmetric_difference_with(&c);
-        assert_eq!(a.len(), 2);
-        assert_eq!(b.len(), 2);
+        assert_eq!(a.count(), 2);
+        assert_eq!(b.count(), 2);
     }
 
     #[test]
@@ -1467,31 +1478,31 @@ mod tests {
         // and this would end up actually growing the array in a way
         // that (safely corrupted the state).
         let mut a = BitSet::new();
-        assert_eq!(a.len(), 0);
+        assert_eq!(a.count(), 0);
         assert_eq!(a.capacity(), 0);
         a.shrink_to_fit();
-        assert_eq!(a.len(), 0);
+        assert_eq!(a.count(), 0);
         assert_eq!(a.capacity(), 0);
         assert!(!a.contains(1));
         a.insert(3);
         assert!(a.contains(3));
-        assert_eq!(a.len(), 1);
+        assert_eq!(a.count(), 1);
         assert!(a.capacity() > 0);
         a.shrink_to_fit();
         assert!(a.contains(3));
-        assert_eq!(a.len(), 1);
+        assert_eq!(a.count(), 1);
         assert!(a.capacity() > 0);
     }
 
     #[test]
     fn test_bit_set_shrink_to_fit() {
         let mut a = BitSet::new();
-        assert_eq!(a.len(), 0);
+        assert_eq!(a.count(), 0);
         assert_eq!(a.capacity(), 0);
         a.insert(259);
         a.insert(98);
         a.insert(3);
-        assert_eq!(a.len(), 3);
+        assert_eq!(a.count(), 3);
         assert!(a.capacity() > 0);
         assert!(!a.contains(1));
         assert!(a.contains(259));
@@ -1503,7 +1514,7 @@ mod tests {
         assert!(a.contains(259));
         assert!(a.contains(98));
         assert!(a.contains(3));
-        assert_eq!(a.len(), 3);
+        assert_eq!(a.count(), 3);
         assert!(a.capacity() > 0);
 
         let old_cap = a.capacity();
@@ -1514,12 +1525,12 @@ mod tests {
         assert!(!a.contains(259));
         assert!(a.contains(98));
         assert!(a.contains(3));
-        assert_eq!(a.len(), 2);
+        assert_eq!(a.count(), 2);
 
         let old_cap2 = a.capacity();
         a.clear();
         assert_eq!(a.capacity(), old_cap2);
-        assert_eq!(a.len(), 0);
+        assert_eq!(a.count(), 0);
         assert!(!a.contains(1));
         assert!(!a.contains(259));
         assert!(!a.contains(98));
@@ -1527,7 +1538,7 @@ mod tests {
 
         a.insert(512);
         assert!(a.capacity() > 0);
-        assert_eq!(a.len(), 1);
+        assert_eq!(a.count(), 1);
         assert!(a.contains(512));
         assert!(!a.contains(1));
         assert!(!a.contains(259));
@@ -1537,7 +1548,7 @@ mod tests {
         a.remove(512);
         a.shrink_to_fit();
         assert_eq!(a.capacity(), 0);
-        assert_eq!(a.len(), 0);
+        assert_eq!(a.count(), 0);
         assert!(!a.contains(512));
         assert!(!a.contains(1));
         assert!(!a.contains(259));
