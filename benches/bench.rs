@@ -10,9 +10,6 @@
 
 #![feature(test)]
 
-extern crate bit_set;
-extern crate bit_vec;
-extern crate rand;
 extern crate test;
 
 use bit_set::BitSet;

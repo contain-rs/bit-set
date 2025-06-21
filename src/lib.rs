@@ -237,9 +237,6 @@ impl BitSet<u32> {
     /// # Examples
     ///
     /// ```
-    /// extern crate bit_vec;
-    /// extern crate bit_set;
-    ///
     /// fn main() {
     ///     use bit_vec::BitVec;
     ///     use bit_set::BitSet;
