@@ -261,6 +261,64 @@ impl BitSet<u32> {
 }
 
 impl<B: BitBlock> BitSet<B> {
+    /// Creates a new empty `BitSet`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bit_set::BitSet;
+    ///
+    /// let mut s = <BitSet>::new_general();
+    /// ```
+    #[inline]
+    pub fn new_general() -> Self {
+        Self::default()
+    }
+
+    /// Creates a new `BitSet` with initially no contents, able to
+    /// hold `nbits` elements without resizing.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bit_set::BitSet;
+    ///
+    /// let mut s = <BitSet>::with_capacity_general(100);
+    /// assert!(s.capacity() >= 100);
+    /// ```
+    #[inline]
+    pub fn with_capacity_general(nbits: usize) -> Self {
+        let bit_vec = BitVec::from_elem_general(nbits, false);
+        Self::from_bit_vec_general(bit_vec)
+    }
+
+    /// Creates a new `BitSet` from the given bit vector.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use bit_vec::BitVec;
+    /// use bit_set::BitSet;
+    ///
+    /// let bv: BitVec<u64> = BitVec::from_bytes_general(&[0b01100000]);
+    /// let s = BitSet::from_bit_vec_general(bv);
+    ///
+    /// // Print 1, 2 in arbitrary order
+    /// for x in s.iter() {
+    ///     println!("{}", x);
+    /// }
+    /// ```
+    #[inline]
+    pub fn from_bit_vec_general(bit_vec: BitVec<B>) -> Self {
+        BitSet { bit_vec }
+    }
+
+    pub fn from_bytes_general(bytes: &[u8]) -> Self {
+        BitSet {
+            bit_vec: BitVec::from_bytes_general(bytes),
+        }
+    }
+
     /// Returns the capacity in bits for this bit vector. Inserting any
     /// element less than this amount will not trigger a resizing.
     ///
@@ -838,6 +896,13 @@ impl<B: BitBlock> BitSet<B> {
     #[inline]
     pub fn reset(&mut self) {
         self.bit_vec.remove_all();
+    }
+
+    /// Clears all bits in this set
+    #[deprecated(since = "0.9.0", note = "please use `fn make_empty` instead")]
+    #[inline]
+    pub fn clear(&mut self) {
+        self.make_empty();
     }
 
     /// Returns `true` if this set contains the specified integer.
