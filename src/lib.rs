@@ -48,7 +48,7 @@
 //! let bv = s.into_bit_vec();
 //! assert!(bv[3]);
 //! ```
-#![doc(html_root_url = "https://docs.rs/bit-set/0.8.0")]
+#![doc(html_root_url = "https://docs.rs/bit-set/0.9.0/bit_set/")]
 #![deny(clippy::shadow_reuse)]
 #![deny(clippy::shadow_same)]
 #![deny(clippy::shadow_unrelated)]
@@ -237,17 +237,15 @@ impl BitSet<u32> {
     /// # Examples
     ///
     /// ```
-    /// fn main() {
-    ///     use bit_vec::BitVec;
-    ///     use bit_set::BitSet;
+    /// use bit_vec::BitVec;
+    /// use bit_set::BitSet;
     ///
-    ///     let bv = BitVec::from_bytes(&[0b01100000]);
-    ///     let s = BitSet::from_bit_vec(bv);
+    /// let bv = BitVec::from_bytes(&[0b01100000]);
+    /// let s = BitSet::from_bit_vec(bv);
     ///
-    ///     // Print 1, 2 in arbitrary order
-    ///     for x in s.iter() {
-    ///         println!("{}", x);
-    ///     }
+    /// // Print 1, 2 in arbitrary order
+    /// for x in s.iter() {
+    ///     println!("{}", x);
     /// }
     /// ```
     #[inline]
@@ -478,7 +476,7 @@ impl<B: BitBlock> BitSet<B> {
     /// }
     /// ```
     #[inline]
-    pub fn iter(&self) -> Iter<B> {
+    pub fn iter(&self) -> Iter<'_, B> {
         Iter(BlockIter::from_blocks(self.bit_vec.blocks()))
     }
 
@@ -822,10 +820,24 @@ impl<B: BitBlock> BitSet<B> {
         self.bit_vec.none()
     }
 
-    /// Clears all bits in this set
+    /// Removes all elements of this set.
+    ///
+    /// Different from [`reset`] only in that the capacity is preserved.
+    ///
+    /// [`reset`]: Self::reset
     #[inline]
-    pub fn clear(&mut self) {
-        self.bit_vec.clear();
+    pub fn make_empty(&mut self) {
+        self.bit_vec.fill(false);
+    }
+
+    /// Resets this set to an empty state.
+    ///
+    /// Different from [`make_empty`] only in that the capacity may NOT be preserved.
+    ///
+    /// [`make_empty`]: Self::make_empty
+    #[inline]
+    pub fn reset(&mut self) {
+        self.bit_vec.remove_all();
     }
 
     /// Returns `true` if this set contains the specified integer.
@@ -1566,7 +1578,7 @@ mod tests {
         assert_eq!(a.count(), 2);
 
         let old_cap2 = a.capacity();
-        a.clear();
+        a.make_empty();
         assert_eq!(a.capacity(), old_cap2);
         assert_eq!(a.count(), 0);
         assert!(!a.contains(1));
