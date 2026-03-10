@@ -48,7 +48,7 @@
 //! let bv = s.into_bit_vec();
 //! assert!(bv[3]);
 //! ```
-#![doc(html_root_url = "https://docs.rs/bit-set/0.8.0")]
+#![doc(html_root_url = "https://docs.rs/bit-set/0.9.0/bit_set/")]
 #![deny(clippy::shadow_reuse)]
 #![deny(clippy::shadow_same)]
 #![deny(clippy::shadow_unrelated)]
@@ -237,17 +237,15 @@ impl BitSet<u32> {
     /// # Examples
     ///
     /// ```
-    /// fn main() {
-    ///     use bit_vec::BitVec;
-    ///     use bit_set::BitSet;
+    /// use bit_vec::BitVec;
+    /// use bit_set::BitSet;
     ///
-    ///     let bv = BitVec::from_bytes(&[0b01100000]);
-    ///     let s = BitSet::from_bit_vec(bv);
+    /// let bv = BitVec::from_bytes(&[0b01100000]);
+    /// let s = BitSet::from_bit_vec(bv);
     ///
-    ///     // Print 1, 2 in arbitrary order
-    ///     for x in s.iter() {
-    ///         println!("{}", x);
-    ///     }
+    /// // Print 1, 2 in arbitrary order
+    /// for x in s.iter() {
+    ///     println!("{}", x);
     /// }
     /// ```
     #[inline]
@@ -478,7 +476,7 @@ impl<B: BitBlock> BitSet<B> {
     /// }
     /// ```
     #[inline]
-    pub fn iter(&self) -> Iter<B> {
+    pub fn iter(&self) -> Iter<'_, B> {
         Iter(BlockIter::from_blocks(self.bit_vec.blocks()))
     }
 

@@ -1,4 +1,22 @@
-Version 0.7.0 (not yet released) (ZERO BREAKING CHANGES)
+Version 0.10.0 (not yet released)
+========================================================
+
+<a id="v0.10.0"></a>
+
+Version 0.9.0
+========================================================
+
+<a id="v0.9.0"></a>
+
+* Minimal Supported Rust Version is 1.82
+* Rust edition 2021 is used
+
+Version 0.8.0
+========================================================
+
+<a id="v0.8.0"></a>
+
+Version 0.7.0 (ZERO BREAKING CHANGES)
 ========================================================
 
 <a id="v0.7.0"></a>
