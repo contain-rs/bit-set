@@ -867,7 +867,7 @@ impl<B: BitBlock> BitSet<B> {
     ///
     /// Note that this function scans the set to calculate the number.
     #[inline]
-    #[deprecated = "use BitVec::count() instead"]
+    #[deprecated = "use BitSet::count() instead"]
     pub fn len(&self) -> usize {
         self.count()
     }
