@@ -51,7 +51,7 @@ fn bench_bit_vecset_iter(b: &mut Bencher) {
     b.iter(|| {
         let mut sum = 0;
         for idx in &bit_vec {
-            sum += idx as usize;
+            sum += idx;
         }
         sum
     })
