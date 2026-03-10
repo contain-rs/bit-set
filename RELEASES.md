@@ -10,6 +10,8 @@ Version 0.9.0
 
 * Minimal Supported Rust Version is 1.82
 * Rust edition 2021 is used
+* implemented `fn make_empty`
+* implemented `fn reset`
 
 Version 0.8.0
 ========================================================
