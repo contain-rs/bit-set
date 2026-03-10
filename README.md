@@ -73,7 +73,7 @@ bit-set = { version = "0.9", features = ["borsh"] }
 
 Other available serialization libraries can be enabled with the
 [`miniserde`](https://github.com/dtolnay/miniserde) and
-[`nanoserde`](https://github.com/not-fl3/nanoserde) features.
+[`nanoserde`](https://github.com/not-fl3/nanoserde) features. (nanoserde is temporarily unavailable!)
 
 
 <!-- cargo-rdme start -->
