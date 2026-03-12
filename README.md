@@ -19,12 +19,12 @@
 
 [crates.io shield]: https://img.shields.io/crates/v/bit-set?label=latest
 [crates.io link]: https://crates.io/crates/bit-set
-[docs.rs badge]: https://docs.rs/bit-set/badge.svg?version=0.9.0
-[docs.rs link]: https://docs.rs/bit-set/0.9.0/bit_set/
+[docs.rs badge]: https://docs.rs/bit-set/badge.svg?version=0.9.1
+[docs.rs link]: https://docs.rs/bit-set/0.9.1/bit_set/
 [github ci badge]: https://github.com/contain-rs/bit-set/actions/workflows/rust.yml/badge.svg
 [rustc 1.82+]: https://img.shields.io/badge/rustc-1.82%2B-blue.svg
-[deps.rs status]: https://deps.rs/crate/bit-set/0.9.0/status.svg
-[deps.rs link]: https://deps.rs/crate/bit-set/0.9.0
+[deps.rs status]: https://deps.rs/crate/bit-set/0.9.1/status.svg
+[deps.rs link]: https://deps.rs/crate/bit-set/0.9.1
 [shields.io download count]: https://img.shields.io/crates/d/bit-set.svg
 
 ## Usage
