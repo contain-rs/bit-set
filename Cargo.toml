@@ -14,7 +14,7 @@ rust-version = "1.82"
 
 [dependencies]
 borsh = { version = "1.6.0", default-features = false, features = ["derive"], optional = true }
-serde = { version = "1.0", default-features = false, features = ["derive"], optional = true }
+serde = { version = "1.0", default-features = false, features = ["derive", "alloc"], optional = true }
 miniserde = { version = "0.1", optional = true }
 nanoserde = { version = "0.2", optional = true }
 
@@ -36,7 +36,7 @@ miniserde = ["dep:miniserde", "bit-vec/miniserde"]
 nanoserde = ["dep:nanoserde", "bit-vec/nanoserde"]
 
 serde_std = ["std", "serde/std"]
-serde_no_std = ["serde/alloc"]
+serde_no_std = []
 borsh_std = ["borsh/std"]
 
 [package.metadata.docs.rs]
